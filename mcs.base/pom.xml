@@ -15,4 +15,13 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <description>Core engine API and util</description>
+  <organization>
+  	<name>MassCustSoft inc.</name>
+  	<url>https://www.masscustsoft.com</url>
+  </organization>
+  <scm>
+  	<developerConnection>Jason Song</developerConnection>
+  	<tag>mcs base</tag>
+  </scm>
 </project>
