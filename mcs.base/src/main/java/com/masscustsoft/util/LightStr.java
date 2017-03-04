@@ -1,6 +1,8 @@
 package com.masscustsoft.util;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -251,5 +253,55 @@ public class LightStr {
 		}
 		sb.append('"');
 		return sb.toString();
+	}
+
+	public static String getSizeStr(long size) {
+		if (size<1000) return size+" B";
+		if (size<1000000) return Math.round(size/100d)/10d+" KB";
+		if (size<1000000000) return Math.round(size/100000d)/10d+" Mb";
+		return Math.round(size/100000000d)/10d+" GB";
+	}
+	
+	public static byte[] getHexContent(String text) {
+		StringBuffer buf = new StringBuffer(text);
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		for (int i = 0; i < buf.length(); i += 2) {
+			char a = buf.charAt(i);
+			char b = buf.charAt(i + 1);
+			if (a >= '0' && a <= '9')
+				a -= '0';
+			else {
+				a -= 'A';
+				a += 10;
+			}
+			if (b >= '0' && b <= '9')
+				b -= '0';
+			else {
+				b -= 'A';
+				b += 10;
+			}
+			byte c = (byte) ((a << 4) + b);
+			os.write(c);
+		}
+		return os.toByteArray();
+	}
+
+	public static void setHexContent(byte[] buf, StringBuffer o) {
+		for (byte b : buf) {
+			byte h = (byte) ((b >> 4) & 0xf);
+			int a = (h < 10) ? '0' + h : 'A' + h - 10;
+			o.append((char) a);
+			byte l = (byte) (b & 0xf);
+			a = (l < 10) ? '0' + l : 'A' + l - 10;
+			o.append((char) a);
+		}
+	}
+
+	public static void setHexContent(InputStream is, StringBuffer o)
+			throws IOException {
+		ByteArrayOutputStream os = new ByteArrayOutputStream();
+		LightFile.copyStream(is, os, 0);
+		os.close();
+		setHexContent(os.toByteArray(), o);
 	}
 }

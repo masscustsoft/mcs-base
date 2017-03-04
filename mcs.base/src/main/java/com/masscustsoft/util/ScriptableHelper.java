@@ -50,16 +50,7 @@ public class ScriptableHelper extends ImporterTopLevel {
 			}
 		}
 		if (obj==null){
-			Map vars=(Map)ThreadHelper.get("$Vars$");
-			if (vars!=null){
-				obj=vars.get(name);
-			}
-		}
-		if (obj==null){
-			AbstractConfig cfg = LightUtil.getCfg();
-			if (cfg!=null){
-				obj=cfg.getVars().get(name);
-			}
+			obj=LightUtil.getVar(name, null);
 		}
 		if (obj!=null){
 			if (!LightUtil.isPrimitive(obj.getClass())){

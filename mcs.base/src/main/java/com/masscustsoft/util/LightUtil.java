@@ -24,6 +24,8 @@ import java.util.TimeZone;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.masscustsoft.Lang.CLASS;
@@ -1035,10 +1037,96 @@ public class LightUtil {
 		}
 		return ret;
 	}
-	
+
+	public static <T> T getVar(String var, T def){
+		int i=var.indexOf("||");
+		String or=null;
+		if (i>0){
+			or=var.substring(i+2);
+			var=var.substring(0,i);
+		}
+		if (var.startsWith("@")){
+			return (T)var;
+		}
+		T v=null;
+		
+		if (v==null){
+			AbstractConfig en=getCfg();
+			if (en!=null) v=(T)en.getVars().get(var);
+		}
+		if (v==null) v=(T)GlbHelper.get(var);
+		if (v==null){
+			if (or!=null) v=getVar(or,def);
+			else v=def;
+		}
+		return v;
+	}
+
 	public static synchronized IBeanFactory getBeanFactory(){
 		return (IBeanFactory)ThreadHelper.get("beanFactory");
 	}
 	
+	public static String getCookie(HttpServletRequest req,String key, String def) throws IOException {
+		String path=getContextPath(); if (LightStr.isEmpty(path)) path="/";
+		Cookie[] cookies = req.getCookies();
+		if (cookies != null) {
+			for (int i = 0; i < cookies.length; i++) {
+				Cookie cook = cookies[i];
+				if (cook.getName().equals(key)) {
+					String st = cook.getValue();
+					if (st.startsWith("*"))
+						st="*"+LightStr.decode(st.substring(1));
+					else{
+						try {
+							st = LightStr.decodeUrl(st);
+						} catch (UnsupportedEncodingException e) {
+						}
+					}
+					if (st.startsWith("\"")) st=st.substring(1);
+					if (st.endsWith("\"")) st=st.substring(st.length()-1);
+					if (st.length()==0) st=def;
+					if (st!=null) def=st.replace('+', ' '); 
+					break;
+				}
+			}
+		}
+		//System.out.println("ServerGetCookie "+key+"="+key+", path="+path+", val="+def+", domain="+req.getServerName());
+		return def;
+	}
 	
+	public static boolean isSecure(HttpServletRequest req){
+		String url=LightUtil.getVar("mainUrl", "");
+		if (url.length()==0){
+			req.getProtocol();
+		}
+		return url.toLowerCase().startsWith("https");
+	}
+	
+	public static void setCookie(HttpServletRequest req, HttpServletResponse resp,String key, String value, int age, boolean httpOnly) throws IOException {
+		if (resp==null) return;
+		Cookie cook;
+		try {
+			String path=getContextPath(); if (LightStr.isEmpty(path)) path="/";
+			if (!value.startsWith("*")){
+				cook = new Cookie(key, LightStr.encodeUrl(value));
+			}
+			else
+				cook = new Cookie(key, "*"+LightStr.encode(value.substring(1)));
+			cook.setPath(path);
+			cook.setMaxAge(age);
+			cook.setHttpOnly(httpOnly);
+			cook.setSecure(isSecure(req));
+			//cook.setDomain(req.getServerName());
+			resp.addCookie(cook);
+			
+			List cookies=(List)ThreadHelper.get("_cookies_");
+			if (cookies==null){
+				cookies=new ArrayList();
+				ThreadHelper.set("_cookies_", cookies);
+			}
+			cookies.add(cook);
+			//System.out.println("ServerSetCookie key="+key+", path="+path+", val="+value+", domain="+cook.getDomain());
+		} catch (UnsupportedEncodingException e) {
+		}
+	}	
 }

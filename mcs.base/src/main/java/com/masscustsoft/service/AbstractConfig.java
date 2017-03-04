@@ -71,4 +71,7 @@ public abstract class AbstractConfig {
 		this.logService = logService;
 	}
 
+	public <T> T getVar(String var, T def){
+		return (T)vars.get(var);
+	}
 }

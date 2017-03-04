@@ -42,6 +42,12 @@
 	    <artifactId>asm</artifactId>
 	    <version>5.0.4</version>
 	</dependency>
+	<dependency>
+	    <groupId>commons-fileupload</groupId>
+	    <artifactId>commons-fileupload</artifactId>
+	    <version>1.3</version>
+	</dependency>
+		
   </dependencies>
   <description>Core engine API and util</description>
   <organization>
