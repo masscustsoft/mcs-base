@@ -1,6 +1,11 @@
 package com.masscustsoft.util;
 
+import java.io.IOException;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -16,13 +21,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.masscustsoft.Lang.CLASS;
 import com.masscustsoft.api.IBeanFactory;
+import com.masscustsoft.api.JsonField;
 import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.xml.Parser;
+import com.masscustsoft.xml.XmlNode;
 
 public class LightUtil {
 	public final static String UTF8 = "utf-8";
@@ -796,6 +805,235 @@ public class LightUtil {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static StringBuffer toJsonString(Object o){
+		return toJsonString(o,false);
+	}
+	
+	public static StringBuffer toJsonString(Object o, boolean shortName){
+		StringWriter writer=new StringWriter();
+		try {
+			writeJson(writer,o,null,shortName);
+			writer.close();
+		} catch (IOException e) {
+			LogUtil.dumpStackTrace(e);
+		}
+		return writer.getBuffer();
+	}
+	
+	public static StringBuffer toShortJsonString(Object o){
+		StringWriter writer=new StringWriter();
+		try {
+			writeJson(writer,o,null, true);
+			writer.close();
+		} catch (IOException e) {
+			LogUtil.dumpStackTrace(e);
+		}
+		return writer.getBuffer();
+	}
+	
+	private static void writeJson(Writer w,Object node,Boolean isLimiter, boolean shortName) throws IOException{
+		if (node==null) {
+			w.write("null");
+			return;
+		}
+		if (node instanceof String){
+			String s=(String)node;
+			if (isLimiter!=null && isLimiter){
+				w.write(s);
+			}
+			else{
+				if (s.startsWith("@@@")){
+					w.write(s.substring(3));
+				}
+				else
+				w.write(LightStr.encodeJsonString(s));
+			}
+			return;
+		}
+		if (node instanceof java.sql.Timestamp){
+			Timestamp dt=(Timestamp)node;
+			w.write("\""+encodeLongDate(dt)+"\"");	
+			return;
+		}
+		if (node instanceof java.sql.Date){
+			java.sql.Date dt=(java.sql.Date)node;
+			w.write("\""+encodeShortDate(dt)+"\"");				
+			return;
+		}
+		if (isPrimitive(node.getClass())){
+			w.write(""+node);
+			return;
+		}
+		if (node instanceof List){
+			w.append("[");
+			List<Object> list=(List)node;
+			boolean first=true;
+			for (Object o:list){
+				if (!first) writeJson(w,",",true,shortName);
+				writeJson(w,o,false,shortName);
+				first=false;
+			}
+			w.append("]");
+			return;
+		}
+		if (node instanceof Map){
+			w.append("{");
+			Map<String,Object> map=(Map)node;
+			boolean first=true;
+			for (String key:map.keySet()){
+				if (!first) writeJson(w,",",true, shortName);
+				if (shortName) {
+					if (LightStr.isIdentity(key)) writeJson(w,key,true,shortName); else writeJson(w,key,false,shortName); 
+				}
+				else writeJson(w,key,false,shortName);
+				writeJson(w,":",true,shortName);
+				writeJson(w,map.get(key),false,shortName);
+				first=false;
+			}
+			w.append("}");
+			return;
+		}
+		writeJson(w,toJsonObject(node),false,shortName);
+	}
+	public static Object parseJson(String s) throws Exception{
+		return LightStr.validateJson(s);
+	}
+	
+	public static Object toJsonObject(Object o){
+		return toJsonObject(o,0);
+	}
+	
+	//1:_class 2:_xml 4:disable _xmlBean
+	public static Object toJsonObject(Object o,int options){
+		if (o == null) return null;
+		if (o instanceof XmlNode) return ((XmlNode)o).toJsonObject();
+		if (o instanceof Character) return o+"";
+		if (o instanceof Boolean) return o;
+		if (o instanceof String) return o;
+		if (o instanceof Integer) return o;
+		if (o instanceof Double) return o;
+		if (o instanceof BigDecimal) return ((BigDecimal)o).doubleValue();
+		if (o instanceof Long) return o;
+		if (o instanceof java.sql.Timestamp) return o;
+		if (o instanceof java.sql.Date) return o;
+		if (o instanceof java.util.Date) return shortDate((java.util.Date)o);
+		if (o instanceof List){
+			List list=new ArrayList();
+			List ll=(List)o;
+			for (int i=0;i<ll.size();i++){
+				Object item=ll.get(i);
+				list.add(toJsonObject(item,options));
+			}
+			return list;
+		}
+		if (o instanceof Map){
+			Map map=new TreeMap();
+			List keys=new ArrayList();
+			for (Object key:((Map)o).keySet()){
+				keys.add(key);
+			}
+			for (int i=0;i<keys.size();i++){
+				Object key=keys.get(i);
+				Object val=((Map)o).get(key);
+				map.put(key.toString(), toJsonObject(val,options));
+			}
+			return map;
+		}
+		Class c=o.getClass();
+		Map map=new TreeMap();
+		List<Field> list = ReflectUtil.getFieldMap(c);
+		//System.out.println("C="+c.getName()+", o="+o);
+		for (int i=0;i<list.size();i++){
+			Field f=list.get(i);
+			//16=final 8=static 128=transient
+			String alia=null;
+			boolean toXml=false;
+			JsonField jf=f.getAnnotation(JsonField.class);
+			if (jf!=null){
+				alia=jf.value();
+				if (jf.output()==false) continue;
+				toXml=jf.xmlBean();
+				if ((options&4)!=0) toXml=false; //force ignore xmlBean if 4 is set
+			}
+			if ((f.getModifiers()&128)!=0 && alia==null) continue;
+			if (alia==null || alia.length()==0) alia=f.getName();
+			if (alia==null) continue;
+			try {
+				Object obj=ReflectUtil.getProperty(o, f.getName());
+				Object v=null;
+				if (!toXml){
+					if ((options&128)!=0 && obj!=null && (obj instanceof List ||obj instanceof Map));
+					else v=toJsonObject(obj,options);
+				}
+				else v=getBeanFactory().toXml(obj,1);
+				if (v!=null) map.put(alia, v);
+			} catch (Exception e) {
+				LogUtil.dumpStackTrace(e);
+			}
+		}
+		if ((options&1)!=0){ //_class as partial of the object
+			map.put("_cls_", CLASS.getName(c));
+		}
+		if ((options&2)!=0){ //_xml as partial of the object
+			map.put("_xml_", getBeanFactory().toXml(o,1));
+		}
+		return map;
+	}
+	
+	public static Object fromJsonObject(Object o) throws Exception{
+		if (o==null) return null;
+		if (LightUtil.isPrimitive(o.getClass())) return o;
+		if (o instanceof List){
+			List to=new ArrayList();
+			List from=(List)o;
+			for (Object it:from){
+				to.add(fromJsonObject(it));
+			}
+			return to;
+		}
+		if (!(o instanceof Map)) return o;
+		Map map=(Map)o;
+		String clz=(String)map.get("_cls_");
+		if (clz==null) return o;
+		if (!clz.contains(".")){
+			clz=getBeanFactory().findRealClass(clz);
+		}
+		Class cls=CLASS.forName(clz);
+		Object ret=cls.newInstance();
+		List<Field> list = ReflectUtil.getFieldMap(cls);
+		for (Field f:list){
+			//16=final 8=static 128=transient
+			if ((f.getModifiers()&128)!=0) continue;
+			try {
+				Object val=ReflectUtil.getProperty(o, f.getName());
+				Object tar=ReflectUtil.getProperty(ret, f.getName());
+				
+				if (val==null) continue;
+				if (tar instanceof List && val instanceof List){
+					List to=(List)tar;
+					List from=(List)val;
+					for (Object it:from){
+						to.add(fromJsonObject(it));
+					}
+				}
+				else
+				if (tar instanceof Map && val instanceof Map){
+					Map to=(Map)tar;
+					Map from=(Map)val;
+					for (Object it:from.keySet()){
+						to.put(it, fromJsonObject(from.get(it)));
+					}
+				}
+				else{
+					ReflectUtil.setProperty(ret, f.getName(), fromJsonObject(val));
+				}
+			} catch (Exception e) {
+				LogUtil.dumpStackTrace(e);
+			}
+		}
+		return ret;
 	}
 	
 	public static synchronized IBeanFactory getBeanFactory(){

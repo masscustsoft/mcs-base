@@ -1,6 +1,9 @@
 package com.masscustsoft.api;
 
 import java.util.List;
+import java.util.Map;
+
+import com.masscustsoft.model.AbstractResult;
 
 public interface IEntity {
 	public void setDataService(IDataService dataService);
@@ -21,4 +24,7 @@ public interface IEntity {
 	
 	public List<IReferentItem> getReferList() throws Exception;
 	public List<IReferentItem> getDescendantList() throws Exception;
+	
+	public void getBeanList(AbstractResult result, Map<String, Object> terms, String text, String sortBy, int from, int size)  throws Exception;
+	
 }
