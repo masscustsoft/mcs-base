@@ -17,6 +17,9 @@ public abstract class AbstractConfig {
 	
 	protected NotifyService notifyService=null;
 
+	protected LogService logService;
+	
+	
 	public void initThread(){
 		
 	}
@@ -58,6 +61,14 @@ public abstract class AbstractConfig {
 
 	public void processSQLException(Throwable e, AbstractResult ret) {
 		e.printStackTrace();
+	}
+
+	public LogService getLogService() {
+		return logService;
+	}
+
+	public void setLogService(LogService logService) {
+		this.logService = logService;
 	}
 
 }

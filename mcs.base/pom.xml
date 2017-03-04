@@ -20,6 +20,23 @@
     	<version>1.7.7.1</version>
     	<scope>runtime</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.bouncycastle</groupId>
+    	<artifactId>bcprov-jdk15on</artifactId>
+    	<version>1.56</version>
+    	<scope>runtime</scope>
+    </dependency>
+    <dependency>
+    	<groupId>commons-codec</groupId>
+    	<artifactId>commons-codec</artifactId>
+    	<version>1.10</version>
+    	<scope>runtime</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.acegisecurity</groupId>
+    	<artifactId>acegi-security</artifactId>
+    	<version>1.0.7</version>
+    </dependency>
   </dependencies>
   <description>Core engine API and util</description>
   <organization>
