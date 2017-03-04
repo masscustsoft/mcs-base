@@ -1,5 +1,6 @@
 package com.masscustsoft.util;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -189,5 +190,12 @@ public class LightStr {
 		}
 	}
 
+	public static String decode(String s) throws IOException{
+		return Base64.decode(s);
+	}
+	
+	public final static String encode(String s) throws IOException{
+		return Base64.encode(s);
+	}
 	
 }

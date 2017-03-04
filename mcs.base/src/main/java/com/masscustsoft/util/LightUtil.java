@@ -14,10 +14,14 @@ import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletResponse;
+
 import com.masscustsoft.service.AbstractConfig;
+import com.masscustsoft.xml.Parser;
 
 public class LightUtil {
 	public final static String UTF8 = "utf-8";
@@ -718,5 +722,78 @@ public class LightUtil {
 			c=c.getSuperclass();
 		}
 		return buf.toString();
+	}
+	
+	/**
+	 * Convert a String expression by expanding any embedded ${} macro, return the original type of any object.   
+	 */
+	public static Object macro(String buf){
+		return macro(buf,'$');
+	}
+	
+	/**
+	 * Convert a String expression by expanding any embedded ${} macro, return value will be converted to String.  
+	 */
+	public static String macroStr(String buf){
+		return macro(buf,'$')+"";
+	}
+	
+	/**
+	 * Convert a String expression by expanding any give embedded macro. The macroKey is the leading character to the macro. 
+	 * 
+	 * @param macroKey Valid value can be '$', '%', '#', '@', '!'.
+	 */
+	public static Object macro(String buf,char macroKey){
+		return macro(buf,macroKey,(Map)null);
+	}
+	
+	/**
+	 * Convert a String expression by expanding any give embedded macro. The macroKey is the leading character to the macro. An env map that can be used for variable preset. 
+	 * 
+	 * @param macroKey Valid value can be '$', '%', '#', '@', '!'.
+	 * @param env A Map to store candidate variable and value pairs.
+	 */
+	public static Object macro(String buf,char macroKey,Map<String,Object> env){
+		return _macro(buf,macroKey,env);
+	}
+	
+	protected static Object _macro(String buf,char macroKey,Object env){
+		if (buf==null||buf.length()==0) return "";
+		Object old=ThreadHelper.get("scriptEnv");
+		ThreadHelper.set("scriptEnv", env);
+
+		Parser p=new Parser(buf,false);
+		Object o=p.parseVars(macroKey);
+		if (o==null) o="";
+		if (o instanceof StringBuffer) o=o.toString();
+		ThreadHelper.set("scriptEnv", old);
+		return o;
+	}
+	
+	public static List<String> splitMacro(String buf,char macroKey){
+		if (buf==null) return null;
+		Parser p=new Parser(buf,false);
+		List<String> o=p.splitVars(macroKey);
+		return o;
+	}
+	
+	public static void noCache(HttpServletResponse resp) {
+		if (resp.containsHeader("Cache-Control")) return;
+		resp.setHeader("Pragma", "no-cache");
+		resp.addHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+		resp.setDateHeader("Expires", 0);
+	}
+
+	public static void doCache(HttpServletResponse resp) {
+		if (resp.containsHeader("Cache-Control")) return;
+		resp.setHeader("Cache-Control", "public");
+		resp.setHeader("Pragma", "cache");
+		Calendar c=LightUtil.getCalendar(); c.add(Calendar.DATE, 7);
+    	resp.setDateHeader("Expires", c.getTime().getTime());
+    	try {
+			resp.setDateHeader("Last-Modified", LightUtil.decodeLongDate("2000-01-01T00:00:00.000+0000").getTime());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

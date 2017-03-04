@@ -1,12 +1,16 @@
 package com.masscustsoft.util;
 
 import java.awt.Color;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 
 public class LightFile {
 
@@ -81,5 +85,32 @@ public class LightFile {
 		is.close();
 	}
 
-	
+	public static void loadStream(InputStream f, StringBuffer buf, String enc) throws IOException {
+		if (enc == null)
+			enc = "8859_1";
+		BufferedReader r = new BufferedReader(new InputStreamReader(f, enc));
+		while (true) {
+			String st = r.readLine();
+			if (st == null) break;
+			//if (st.length() == 0) continue;
+			//char ch = 65279;
+			//if (st.startsWith(ch + ""))
+			//st = st.substring(1);
+			buf.append(st + "\r\n");
+		}
+		//r.close();
+	}
+
+	public static void saveStream(OutputStream f, StringBuffer buf, String enc) {
+		if (enc == null)
+			enc = "8859_1";
+		try {
+			Writer w = new OutputStreamWriter(f, enc);
+			w.append(buf.toString());
+			w.flush();
+			w.close();
+		} catch (IOException e) {
+			LogUtil.info("saveStream fail:"+e);
+		}
+	}	
 }
