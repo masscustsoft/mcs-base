@@ -20,6 +20,7 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.masscustsoft.api.IBeanFactory;
 import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.xml.Parser;
 
@@ -796,4 +797,10 @@ public class LightUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	public static synchronized IBeanFactory getBeanFactory(){
+		return (IBeanFactory)ThreadHelper.get("beanFactory");
+	}
+	
+	
 }

@@ -17,6 +17,6 @@ public interface IVariant {
 	 * @param info Used as different type indicator to generate the class from data binded. 
 	 * @throws Exception
 	 */
-	byte[] getClassBytes(DynamicClassInfo info) throws Exception;
+	public byte[] getClassBytes(DynamicClassInfo info) throws Exception;
 	
 }
