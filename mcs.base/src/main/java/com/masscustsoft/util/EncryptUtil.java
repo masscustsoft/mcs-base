@@ -1,6 +1,9 @@
 package com.masscustsoft.util;
 
-import org.acegisecurity.providers.encoding.ShaPasswordEncoder;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.crypto.StreamCipher;
 import org.bouncycastle.crypto.engines.RC4Engine;
 import org.bouncycastle.crypto.params.KeyParameter;
@@ -46,15 +49,17 @@ public class EncryptUtil {
 		return new String(UrlBase64.encode(cipherText)).trim();
 	}
 
-	public static String saltPassword(String pass, String salt){
+	public static String saltPassword(String pass, String salt) throws NoSuchAlgorithmException{
 		if (pass.startsWith("\u001f")) return pass;
-		ShaPasswordEncoder en = new ShaPasswordEncoder(256);
-		return "\u001f"+en.encodePassword(pass, salt);
+		String newPass = encodePassword(pass, salt);
+		return "\u001f"+newPass;
 	}
 	
-	public static String encodePassword(String pass, String salt){
-		ShaPasswordEncoder en = new ShaPasswordEncoder(256);
-		return en.encodePassword(pass, salt);
+	public static String encodePassword(String pass, String salt) throws NoSuchAlgorithmException{
+		String saltedPass = pass+"{"+salt+"}";
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+		byte[] digest = messageDigest.digest(saltedPass.getBytes());
+		return new String(Hex.encodeHex(digest));
 	}
 	
 	public static final String __OBFUSCATE = "OBF:";
