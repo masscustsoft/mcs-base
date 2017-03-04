@@ -14,6 +14,12 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.mozilla</groupId>
+    	<artifactId>rhino</artifactId>
+    	<version>1.7.7.1</version>
+    	<scope>runtime</scope>
+    </dependency>
   </dependencies>
   <description>Core engine API and util</description>
   <organization>
