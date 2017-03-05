@@ -18,4 +18,6 @@ public interface IBeanFactory {
 	public BeanProxy getBeanProxy(String fsId, String beanName) throws Exception;
 	public IRepository getRepository(String string, String notifyBodyFile);
 	public String getPureBeanName(String notifyBodyFile);
+	public void addRepository(String fsId, IRepository repository);
+	public String getId();
 }

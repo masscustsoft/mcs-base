@@ -1,14 +1,15 @@
 package com.masscustsoft.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.masscustsoft.api.IClusterService;
 import com.masscustsoft.api.IDataService;
 import com.masscustsoft.api.IRepository;
 import com.masscustsoft.model.AbstractResult;
-import com.masscustsoft.util.LightUtil;
 
 public abstract class AbstractConfig {
 	
@@ -21,6 +22,9 @@ public abstract class AbstractConfig {
 	protected NotifyService notifyService=null;
 
 	protected LogService logService;
+	
+	List<BeanInterceptor> beanInterceptors=new ArrayList<BeanInterceptor>();
+	
 	
 	
 	public void initThread(){
@@ -81,5 +85,13 @@ public abstract class AbstractConfig {
 	public abstract IDataService getDs();
 
 	public abstract IRepository getFs();
+
+	public List<BeanInterceptor> getBeanInterceptors() {
+		return beanInterceptors;
+	}
+
+	public void setBeanInterceptors(List<BeanInterceptor> beanInterceptors) {
+		this.beanInterceptors = beanInterceptors;
+	}
 
 }

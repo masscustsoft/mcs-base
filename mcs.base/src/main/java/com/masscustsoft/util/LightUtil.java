@@ -1178,4 +1178,73 @@ public class LightUtil {
 		if (LightStr.isEmpty(version)) version=LightUtil.bootupTime+"";
 		return version;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object decodeObject(String v, Class c, boolean local) throws Exception{
+		if (v==null) return v;
+		//if (c.isEnum()) return Enum.valueOf(c, v);
+		String cls=c.getName();
+		if (cls.equals("char") || cls.equals("java.lang.Character")){
+			return (java.lang.Character)v.charAt(0);
+		}
+		if (cls.equals("java.lang.String")){
+			return v;
+		}
+		if (cls.equals("java.lang.Object")){
+			return v;
+		}
+		if (cls.equals("int") || cls.equals("java.lang.Integer")){
+			if (local){
+				return (int)Math.round(fromNativeNumber(v,0d));
+			}
+			else return decodeInt(v);
+		}
+		if (cls.equals("long") || cls.equals("java.lang.Long")){
+			if (local){
+				return Math.round(fromNativeNumber(v,0d));
+			}
+			else return decodeLong(v);
+		}
+		if (cls.equals("float") || cls.equals("java.lang.Float")){
+			if (local){
+				return fromNativeNumber(v,0d).floatValue();
+			}
+			else return decodeFloat(v);
+		}
+		if (cls.equals("double") || cls.equals("java.lang.Double")){
+			if (local){
+				return fromNativeNumber(v,0d);
+			}
+			else return decodeDouble(v);
+		}
+		if (cls.equals("boolean") || cls.equals("java.lang.Boolean")){
+			return decodeBoolean(v);
+		}
+		if (cls.equalsIgnoreCase("java.util.Date")){
+			throw new RuntimeException("java.util.date not supported, please use java.sql.Date or java.sql.Timestamp instead");
+		}
+		if (cls.equalsIgnoreCase("java.sql.Date")){
+			java.sql.Date dt;
+			if (local) {
+				dt=fromNativeShortDate(v);
+			}
+			else {
+				dt=decodeShortDate(v);
+			}
+			if (dt==null) return null;
+			return shortDate(dt);
+
+		}
+		if (cls.equalsIgnoreCase("java.sql.Timestamp")){
+			if (local) {
+				return fromNativeLongDate(v);
+			}
+			else {
+				TimeZone timezone=getTimezone();
+				return decodeLongDate(v,timezone);
+			}
+		}
+
+		return null;
+	}
 }

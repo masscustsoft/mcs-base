@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.Map;
 
 import com.masscustsoft.api.IBody;
@@ -361,5 +362,55 @@ public class LightStr {
 		String prefix = v.substring(0, idx + 1);
 		int version = LightUtil.decodeInt(v.substring(idx + 1));
 		return prefix + (version + 1);
+	}
+	
+	public static String convert(String s){
+		return convert(s,null);
+	}
+	
+	public static String convert(String s, Map m){
+		if (s==null) return "";
+		if (m==null) m=new HashMap();
+		ThreadHelper.set("values",m);
+		StringBuffer ret=new StringBuffer();
+		int ofs=0;
+		while(true){
+			int i=s.indexOf("{",ofs);
+			if (i<0){
+				ret.append(s.substring(ofs));
+				return ret.toString();
+			}
+			ret.append(s.substring(ofs,i));
+			int j=s.indexOf("}",i);
+			String fld=s.substring(i+1,j);
+			Object val="";
+			if (fld.indexOf("[")==0){
+				int k=fld.indexOf("]");
+				String exp=fld.substring(1,k).replaceAll("this\\.", "Unify.");
+				System.out.println("exp="+exp);
+				val=LightUtil.macro("${"+exp+"}",'$',m);	
+			}
+			else{
+				int k=fld.indexOf(":");
+				String fmt="";
+				if (k>0){
+					fmt=fld.substring(k+1);
+					fld=fld.substring(0, k);
+				}
+				val=LightUtil.macro("${"+fld+"}",'$',m);
+				ThreadHelper.set("_value_", val);
+				if (!LightStr.isEmpty(fmt)){
+					k=fmt.indexOf("(");
+					if (k>=0){
+						val=LightUtil.macro("${Unify."+fmt.substring(0, k)+"(_value_,"+fmt.substring(k+1),'$',m);	
+					}
+					else{
+						val=LightUtil.macro("${Unify."+fmt+"(_value_)}",'$',m);
+					}
+				}	
+			}
+			ret.append(val.toString());
+			ofs=j+1;
+		}
 	}
 }
