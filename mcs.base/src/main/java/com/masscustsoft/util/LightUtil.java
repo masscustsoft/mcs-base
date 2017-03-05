@@ -1,5 +1,6 @@
 package com.masscustsoft.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -30,10 +31,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.masscustsoft.Lang.CLASS;
 import com.masscustsoft.api.IBeanFactory;
+import com.masscustsoft.api.ICleanup;
 import com.masscustsoft.api.IDataService;
 import com.masscustsoft.api.IRepository;
 import com.masscustsoft.api.JsonField;
 import com.masscustsoft.service.AbstractConfig;
+import com.masscustsoft.service.TempItem;
 import com.masscustsoft.xml.Parser;
 import com.masscustsoft.xml.XmlNode;
 
@@ -1246,5 +1249,30 @@ public class LightUtil {
 		}
 
 		return null;
+	}
+	
+	public static void clearup(Map<String,Object> map){
+		Object[] oo=map.values().toArray();
+		for (int i=0;i<oo.length;i++){
+			Object o=oo[i];
+			if (o instanceof ICleanup){
+				ICleanup cln=(ICleanup)o;
+				cln.cleanup();
+			}
+			else
+			if (o instanceof File){
+				File f=(File)o;
+				if (f.exists()) {
+					//System.out.println("deleting "+f.getAbsolutePath());
+					StreamUtil.xdelete(f);
+				}
+			}
+			else
+			if (o instanceof TempItem){
+				TempItem f=(TempItem)o;
+				//f.delete();
+			}
+		}
+		map.clear();
 	}
 }

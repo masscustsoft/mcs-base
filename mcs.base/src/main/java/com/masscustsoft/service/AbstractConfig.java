@@ -6,10 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.masscustsoft.api.IClusterService;
 import com.masscustsoft.api.IDataService;
 import com.masscustsoft.api.IRepository;
 import com.masscustsoft.model.AbstractResult;
+import com.masscustsoft.util.GlbHelper;
+import com.masscustsoft.util.LightUtil;
+import com.masscustsoft.util.LogUtil;
 
 public abstract class AbstractConfig {
 	
@@ -24,16 +26,33 @@ public abstract class AbstractConfig {
 	protected LogService logService;
 	
 	List<BeanInterceptor> beanInterceptors=new ArrayList<BeanInterceptor>();
-	
+
+	protected CacheService cacheService=null;
+
+	ClusterService clusterService;
 	
 	
 	public void initThread(){
 		
 	}
 	
-	public abstract IClusterService getClusterService();
+	public void initCluster(){//install jobService
+		if (clusterService==null) return;
+		try {
+			if (clusterService.init(LightUtil.getBeanFactory())) clusterService.start();
+		} catch (Exception e) {
+			LogUtil.info("Cluster Start failed!"+e.getMessage());
+		}
+	}
 	
-	
+	public void removeCluster(){
+		if (clusterService==null) return;
+		try {
+			clusterService.stop();
+		} catch (Exception e) {
+			LogUtil.info("Cluster Stop failed!"+e.getMessage());
+		}	
+	}
 	public String getSupportedModules() {
 		return supportedModules;
 	}
@@ -92,6 +111,22 @@ public abstract class AbstractConfig {
 
 	public void setBeanInterceptors(List<BeanInterceptor> beanInterceptors) {
 		this.beanInterceptors = beanInterceptors;
+	}
+
+	public CacheService getCacheService() {
+		return cacheService;
+	}
+
+	public void setCacheService(CacheService cacheService) {
+		this.cacheService = cacheService;
+	}
+
+	public ClusterService getClusterService() {
+		return clusterService;
+	}
+
+	public void setClusterService(ClusterService clusterService) {
+		this.clusterService = clusterService;
 	}
 
 }

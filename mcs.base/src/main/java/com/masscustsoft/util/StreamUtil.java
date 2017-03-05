@@ -270,80 +270,93 @@ public class StreamUtil {
 	}
 	
 	public static Collection<String> getResources(
-	        final Pattern pattern) throws ZipException, IOException{
-	        final ArrayList<String> retval = new ArrayList<String>();
-	        final String classPath = System.getProperty("java.class.path", ".");
-	        String semi=System.getProperty("path.separator");
-	        final String[] classPathElements = classPath.split(semi);
-	        for(final String element : classPathElements){
-	            retval.addAll(getResources(element, pattern));
-	        }
-	        return retval;
-	    }
+        final Pattern pattern) throws ZipException, IOException{
+        final ArrayList<String> retval = new ArrayList<String>();
+        final String classPath = System.getProperty("java.class.path", ".");
+        String semi=System.getProperty("path.separator");
+        final String[] classPathElements = classPath.split(semi);
+        for(final String element : classPathElements){
+            retval.addAll(getResources(element, pattern));
+        }
+        return retval;
+    }
 
-		public static Collection<String> getResources(
-		        final String pat) throws ZipException, IOException{
-		    return getResources(Pattern.compile(pat));
+	public static Collection<String> getResources(
+	        final String pat) throws ZipException, IOException{
+	    return getResources(Pattern.compile(pat));
+	}
+	
+    private static Collection<String> getResources(
+        final String element,
+        final Pattern pattern) throws ZipException, IOException{
+        final ArrayList<String> retval = new ArrayList<String>();
+        final File file = new File(element);
+        if(file.isDirectory()){
+            retval.addAll(getResourcesFromDirectory(file, file, pattern));
+        } else{
+            retval.addAll(getResourcesFromJarFile(file, pattern));
+        }
+        return retval;
+    }
+
+    private static Collection<String> getResourcesFromJarFile(
+        final File file,
+        final Pattern pattern) throws ZipException, IOException{
+        final ArrayList<String> retval = new ArrayList<String>();
+        ZipFile zf = new ZipFile(file);
+        final Enumeration e = zf.entries();
+        while(e.hasMoreElements()){
+            final ZipEntry ze = (ZipEntry) e.nextElement();
+            final String fileName = ze.getName();
+            if (fileName.endsWith("/")) continue;
+            final boolean accept = pattern.matcher(fileName).matches();
+            
+            if(accept){
+                retval.add(fileName);
+            }
+        }
+        try{
+            zf.close();
+        } catch(final IOException e1){
+            throw new Error(e1);
+        }
+        return retval;
+    }
+
+    private static Collection<String> getResourcesFromDirectory(
+        final File directory,
+        final File base,
+        final Pattern pattern) throws IOException{
+        final ArrayList<String> retval = new ArrayList<String>();
+        final File[] fileList = directory.listFiles();
+        String basePath=base.getCanonicalPath();
+        for(final File file : fileList){
+        	if(file.isDirectory()){
+                retval.addAll(getResourcesFromDirectory(file, base, pattern));
+            } else{
+                final String fileName = file.getCanonicalPath().substring(basePath.length()+1).replace('\\', '/');
+                final boolean accept = pattern.matcher(fileName).matches();
+                if(accept){
+                    retval.add(fileName);
+                }
+            }
+        }
+        return retval;
+    }
+	   
+    public static void xdelete(File f) {
+		//System.out.println("deleting " + f.getAbsolutePath());
+		if (f.isDirectory()) {
+			if (f.listFiles() == null)
+				System.out.println("failed!");
+			else
+				for (File g : f.listFiles()) {
+					xdelete(g);
+				}
 		}
-		
-	    private static Collection<String> getResources(
-	        final String element,
-	        final Pattern pattern) throws ZipException, IOException{
-	        final ArrayList<String> retval = new ArrayList<String>();
-	        final File file = new File(element);
-	        if(file.isDirectory()){
-	            retval.addAll(getResourcesFromDirectory(file, file, pattern));
-	        } else{
-	            retval.addAll(getResourcesFromJarFile(file, pattern));
-	        }
-	        return retval;
-	    }
-
-	    private static Collection<String> getResourcesFromJarFile(
-	        final File file,
-	        final Pattern pattern) throws ZipException, IOException{
-	        final ArrayList<String> retval = new ArrayList<String>();
-	        ZipFile zf = new ZipFile(file);
-	        final Enumeration e = zf.entries();
-	        while(e.hasMoreElements()){
-	            final ZipEntry ze = (ZipEntry) e.nextElement();
-	            final String fileName = ze.getName();
-	            if (fileName.endsWith("/")) continue;
-	            final boolean accept = pattern.matcher(fileName).matches();
-	            
-	            if(accept){
-	                retval.add(fileName);
-	            }
-	        }
-	        try{
-	            zf.close();
-	        } catch(final IOException e1){
-	            throw new Error(e1);
-	        }
-	        return retval;
-	    }
-
-	    private static Collection<String> getResourcesFromDirectory(
-	        final File directory,
-	        final File base,
-	        final Pattern pattern) throws IOException{
-	        final ArrayList<String> retval = new ArrayList<String>();
-	        final File[] fileList = directory.listFiles();
-	        String basePath=base.getCanonicalPath();
-	        for(final File file : fileList){
-	        	if(file.isDirectory()){
-	                retval.addAll(getResourcesFromDirectory(file, base, pattern));
-	            } else{
-	                final String fileName = file.getCanonicalPath().substring(basePath.length()+1).replace('\\', '/');
-	                final boolean accept = pattern.matcher(fileName).matches();
-	                if(accept){
-	                    retval.add(fileName);
-	                }
-	            }
-	        }
-	        return retval;
-	    }
-	    
+		f.delete();
+	}
+    
 	public static void streamOut(Upload up,InputStream is, Long size) throws Exception{
 		streamOut(up, is, null, size, null);
 	}

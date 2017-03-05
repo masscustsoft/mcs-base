@@ -1,6 +1,7 @@
 package com.masscustsoft.util;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -10,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.masscustsoft.api.IBody;
+import com.masscustsoft.api.ICleanup;
+import com.masscustsoft.service.TempItem;
 import com.masscustsoft.xml.Parser;
 
 public class LightStr {
@@ -413,4 +416,6 @@ public class LightStr {
 			ofs=j+1;
 		}
 	}
+	
+	
 }

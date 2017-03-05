@@ -2,6 +2,7 @@ package com.masscustsoft.util;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.masscustsoft.service.TempItem;
@@ -47,4 +48,14 @@ public class ThreadHelper {
 	public static void postponeDelete(TempItem f){
 		set(LightUtil.getHashCode(),f);
 	}
+	
+	public static void deferDeleteFile(File f) throws Exception {
+		ThreadHelper.set("TempFile" + f.hashCode(), f);
+	}
+
+	public static void deferDeleteTemp(TempItem f) throws Exception {
+		ThreadHelper.set("TempItem" + f.hashCode(), f);
+	}
+
+	
 }
