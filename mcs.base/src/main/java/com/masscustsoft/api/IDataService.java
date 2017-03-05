@@ -3,6 +3,7 @@ package com.masscustsoft.api;
 import java.util.List;
 import java.util.Map;
 
+import com.masscustsoft.model.SearchResult;
 import com.masscustsoft.service.Constraint;
 import com.masscustsoft.service.PageInfo;
 
@@ -17,6 +18,7 @@ public interface IDataService{
 	public static final String UniqueID="i_uuid"; //uniqueId_, this _uuid is a one id each time you insert
 	public static final String TBL="class_";
 	public static final String XML="xml_";
+	public static int MAX_RECORD=1000000;
 	
 	public static final String INDEX_="i_";
 	public static final String CATEGORY_="c_";
@@ -26,13 +28,22 @@ public interface IDataService{
 	public static final String DATEINDEX_="z_";
 	public static final String TIMESTAMP_="d_";
 	
-	
+	public String getDsId();
+	public String getDatabaseName();
 	public boolean getTraceable();
 	
 	public void insertBean(IEntity bean) throws Exception;
 	public void updateBean(IEntity bean) throws Exception;
 	public void _updateBean(IEntity bean) throws Exception;
-	 public void deleteBean(IEntity bean) throws Exception;
+	public void deleteBean(IEntity bean) throws Exception;
+	
+	public void _insertBean(String clusterId,String tbl,String uniqueId, String xml) throws Exception;
+	public void _deleteBean(String clusterId, String tbl, String uniqueId) throws Exception;
+	public void _updateBean(String clusterId, String tbl, String uniqueId, String old, String xml) throws Exception;
+
+	public SearchResult _doSearch(String names, Map<String,Object> terms, String fields, String text, String sortBy, int from, int size, String facet) throws Exception;
+	public SearchResult _doSearchBySql(String sql, Map<String,Object> terms, int from, int size, String sort, String facet) throws Exception;
+		
 	public <T extends IEntity> T getBean(Class<T> c,Object...paras) throws Exception;
 	public <T extends IEntity> T getBean(int defer, Class<T> c,Object...paras) throws Exception;
 	public <T extends Object> List<T> getBeanList(Class<T> c, String specific, String text)	throws Exception;
@@ -70,4 +81,15 @@ public interface IDataService{
 	public boolean supportFullText(String model);
 	public String createTempTable(String tblName,List<Map> fields,List<Map> data) throws Exception;
 	public void dropTempTable(String tblName) throws Exception;
+
+	public void _commitTransaction(String transId) throws Exception;	
+	public void _rollbackTransaction(String transId) throws Exception;
+	public void validate() throws Exception;
+	public void destroy() throws Exception;
+	public void setDsId(String dsId);
+	public void setDatabaseName(String databaseName);
+	
+	public String getVariable(String varId) throws Exception;
+	public void setVariable(String varId, String val) throws Exception;
+	
 }

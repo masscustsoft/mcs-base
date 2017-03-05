@@ -30,6 +30,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.masscustsoft.Lang.CLASS;
 import com.masscustsoft.api.IBeanFactory;
+import com.masscustsoft.api.IDataService;
+import com.masscustsoft.api.IRepository;
 import com.masscustsoft.api.JsonField;
 import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.xml.Parser;
@@ -1128,5 +1130,31 @@ public class LightUtil {
 			//System.out.println("ServerSetCookie key="+key+", path="+path+", val="+value+", domain="+cook.getDomain());
 		} catch (UnsupportedEncodingException e) {
 		}
-	}	
+	}
+	
+	public static IDataService getDataService(){
+		IDataService data=(IDataService)ThreadHelper.get("$Ds$");
+		if (data==null){
+			data=LightUtil.getCfg().getDs();
+			if(data==null){
+				System.out.println("cfg="+LightUtil.getCfg());
+			}
+		}
+		return data;
+	}
+	
+	public static IRepository getRepository(){
+		IRepository data=(IRepository)ThreadHelper.get("$Fs$");
+		if (data==null){
+			AbstractConfig cfg=getCfg();
+			if (cfg!=null) data = cfg.getFs();
+		}
+		return data;
+	}
+
+	public static String getUserId() {
+		String userId=(String)ThreadHelper.get("userId");
+		if (userId==null) userId="guest";
+		return userId;
+	}
 }

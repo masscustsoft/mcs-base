@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.masscustsoft.api.IClusterService;
+import com.masscustsoft.api.IDataService;
+import com.masscustsoft.api.IRepository;
 import com.masscustsoft.model.AbstractResult;
 
 public abstract class AbstractConfig {
@@ -74,4 +76,9 @@ public abstract class AbstractConfig {
 	public <T> T getVar(String var, T def){
 		return (T)vars.get(var);
 	}
+	
+	public abstract IDataService getDs();
+
+	public abstract IRepository getFs();
+
 }

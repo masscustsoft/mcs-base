@@ -107,13 +107,21 @@ public abstract class AbstractDataService implements IDataService {
 		return res;
 	}
 	
+	@Override
 	public SearchResult _doSearch(String names, Map<String,Object> terms, String fields,
 			String text, String sortBy, int from, int size, String facet)
 			throws Exception {
 		
 		return null;
 	}
+	
 
+	@Override
+	public SearchResult _doSearchBySql(String sql, Map<String,Object> terms, int from, int size, String sort, String facet) throws Exception {
+		throw new Exception("Not supported!");
+	}
+	
+	
 	/**
 	 * {@inheritDoc}
 	 */
