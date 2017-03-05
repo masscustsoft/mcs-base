@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Map;
 
+import com.masscustsoft.api.IBody;
 import com.masscustsoft.xml.Parser;
 
 public class LightStr {
@@ -300,8 +302,64 @@ public class LightStr {
 	public static void setHexContent(InputStream is, StringBuffer o)
 			throws IOException {
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
-		LightFile.copyStream(is, os, 0);
+		StreamUtil.copyStream(is, os, 0);
 		os.close();
 		setHexContent(os.toByteArray(), o);
+	}
+	
+	public static void strokeBody(IBody b, boolean toBody, boolean toHtml)
+			throws Exception {
+		if (toBody) {
+			// convert html into plain
+			String htm = b.getHtmlBody();
+			if (htm != null) {
+				if (htm.startsWith("{")) {
+					Map<String, String> map = (Map) LightUtil.parseJson(htm);
+					htm = "";
+					for (String html : map.values()) {
+						if (html != null)
+							htm += html.replaceAll("\\<.*?>", "") + " ";
+					}
+					b.setBody(htm);
+				} else
+					b.setBody(htm.replaceAll("\\<.*?>", ""));
+			}
+		}
+		if (toHtml) {
+			// convert plain into html
+			String txt = b.getBody();
+			if (txt != null) {
+				if (txt.startsWith("{")) {
+					Map<String, String> map = (Map) LightUtil.parseJson(txt);
+					txt = "";
+					for (String text : map.values()) {
+						if (text != null)
+							txt += text.replace("\n", "<br>")
+									.replace(" ", "&nbsp;")
+									.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
+					}
+					b.setHtmlBody(txt);
+				} else
+					b.setHtmlBody(txt.replace("\n", "<br>")
+							.replace(" ", "&nbsp;")
+							.replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;"));
+			}
+		}
+	}
+
+	public static String incVersion(String v) {
+		if (v == null)
+			v = "";
+		int idx = 0;
+		for (int i = v.length() - 1; i >= 0; i--) {
+			char c = v.charAt(i);
+			if (!Character.isDigit(c)) {
+				idx = i;
+				break;
+			}
+		}
+		String prefix = v.substring(0, idx + 1);
+		int version = LightUtil.decodeInt(v.substring(idx + 1));
+		return prefix + (version + 1);
 	}
 }

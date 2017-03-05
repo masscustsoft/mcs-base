@@ -14,7 +14,7 @@ import com.masscustsoft.service.ProxyVariantWrapper;
 import com.masscustsoft.service.WebServiceEntity;
 import com.masscustsoft.service.WebServiceEntry;
 import com.masscustsoft.util.ClassFactory;
-import com.masscustsoft.util.LightFile;
+import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.LightUtil;
 
 /**
@@ -213,7 +213,7 @@ public class CLASS extends ClassFactory{
 				File f=dynamicJars.get(i);
 				try {
 					File temp=File.createTempFile("WAB", ".jar");
-					LightFile.copyFile(f, temp);
+					StreamUtil.copyFile(f, temp);
 					temp.deleteOnExit();
 					tempJars.add(temp);
 					urls[i]=new URL("file:"+temp.getAbsolutePath());

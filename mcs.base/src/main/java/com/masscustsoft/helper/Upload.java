@@ -26,7 +26,7 @@ import com.masscustsoft.service.UriContext;
 import com.masscustsoft.service.inner.DiskTempItem;
 import com.masscustsoft.service.inner.DiskTempItemFactory;
 import com.masscustsoft.util.GlbHelper;
-import com.masscustsoft.util.LightFile;
+import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.LightStr;
 import com.masscustsoft.util.LightUtil;
 import com.masscustsoft.util.LogUtil;
@@ -267,7 +267,7 @@ public class Upload {
 	private void parsePostUpload(ServletRequest req) throws Exception {
 		ServletInputStream is = req.getInputStream();
 		StringBuffer buf = new StringBuffer();
-		LightFile.loadStream(is, buf, LightUtil.UTF8);
+		StreamUtil.loadStream(is, buf, LightUtil.UTF8);
 		String[] list = buf.toString().split("&");
 		for (String ss : list) {
 			int idx = ss.indexOf("=");
@@ -286,7 +286,7 @@ public class Upload {
 	private void parseJsonUpload(ServletRequest req) throws Exception {
 		ServletInputStream is = req.getInputStream();
 		StringBuffer buf = new StringBuffer();
-		LightFile.loadStream(is, buf, LightUtil.UTF8);
+		StreamUtil.loadStream(is, buf, LightUtil.UTF8);
 		Map reqMap = (Map) LightUtil.parseJson(buf.toString());
 		map.putAll(reqMap);
 	}
@@ -678,7 +678,7 @@ public class Upload {
 
 		StringBuffer buf = new StringBuffer();
 		ServletInputStream is = req.getInputStream();
-		LightFile.loadStream(is, buf, LightUtil.UTF8);
+		StreamUtil.loadStream(is, buf, LightUtil.UTF8);
 		is.close();
 
 		LogUtil.info("SOAP BODY::\n" + buf);

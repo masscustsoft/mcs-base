@@ -16,7 +16,7 @@ import java.util.TimeZone;
 
 import com.masscustsoft.service.inner.ConnectionStream;
 import com.masscustsoft.util.GlbHelper;
-import com.masscustsoft.util.LightFile;
+import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.LightStr;
 import com.masscustsoft.util.LightUtil;
 import com.masscustsoft.util.ThreadHelper;
@@ -90,7 +90,7 @@ public class HttpClient {
 			processReponseHeaders(conn);
 			if (relocation.length()==0){
 				InputStream is = getResponseStream(conn);
-				LightFile.loadStream(is, buf, charset);
+				StreamUtil.loadStream(is, buf, charset);
 			}
 			httpUrl=relocation;
 			conn.disconnect();
@@ -251,7 +251,7 @@ public class HttpClient {
 		processReponseHeaders(conn);
 		if (relocation.length()==0){
 			InputStream is = getResponseStream(conn);
-			LightFile.loadStream(is, buf, charset);
+			StreamUtil.loadStream(is, buf, charset);
 			is.close();
 		}
 		//System.out.println("http RESP="+buf);
@@ -346,7 +346,7 @@ public class HttpClient {
 		        w.write(FIELD_SEPARATOR);
 		        w.write(("Content-Type: application/octet-stream").getBytes());
 		        w.write(HEADER_SEPARATOR);
-		        LightFile.copyStream(is, w, 0);
+		        StreamUtil.copyStream(is, w, 0);
 			}
 			else
 			if (val instanceof InputStream){
@@ -359,7 +359,7 @@ public class HttpClient {
 		        w.write(FIELD_SEPARATOR);
 		        w.write(("Content-Type: application/octet-stream").getBytes());
 		        w.write(HEADER_SEPARATOR);
-		        LightFile.copyStream(is, w, 0);
+		        StreamUtil.copyStream(is, w, 0);
 			}
 			else{
 				w.write(BOUNDARY_PREFIX);
@@ -398,7 +398,7 @@ public class HttpClient {
 			processReponseHeaders(conn);
 			if (relocation.length()==0){
 				InputStream is = getResponseStream(conn);
-				LightFile.loadStream(is, buf, charset);
+				StreamUtil.loadStream(is, buf, charset);
 				is.close();
 			}
 			httpUrl=relocation;
@@ -431,7 +431,7 @@ public class HttpClient {
 			processReponseHeaders(conn);
 			if (relocation.length()==0){
 				InputStream is = getResponseStream(conn);
-				LightFile.loadStream(is, buf, charset);
+				StreamUtil.loadStream(is, buf, charset);
 				is.close();
 			}
 			httpUrl=relocation;

@@ -8,6 +8,7 @@ import com.masscustsoft.api.IClusterService;
 import com.masscustsoft.api.IDataService;
 import com.masscustsoft.api.IRepository;
 import com.masscustsoft.model.AbstractResult;
+import com.masscustsoft.util.LightUtil;
 
 public abstract class AbstractConfig {
 	
@@ -76,7 +77,7 @@ public abstract class AbstractConfig {
 	public <T> T getVar(String var, T def){
 		return (T)vars.get(var);
 	}
-	
+
 	public abstract IDataService getDs();
 
 	public abstract IRepository getFs();

@@ -1152,9 +1152,30 @@ public class LightUtil {
 		return data;
 	}
 
+	public static IDataService getDataService(String dsId){
+		if (dsId==null) return getDataService();
+		IDataService ds = LightUtil.getBeanFactory().getDataService(dsId);
+		if (ds==null) ds=getDataService();
+		return ds;
+	}
+
+	public static IRepository getRepository(String fsId){
+		if (fsId==null) return getRepository();
+		IRepository fs = LightUtil.getBeanFactory().getRepository(fsId);
+		if (fs==null) fs=getRepository();
+		return fs;
+	}
+
+	
 	public static String getUserId() {
 		String userId=(String)ThreadHelper.get("userId");
 		if (userId==null) userId="guest";
 		return userId;
+	}
+	
+	public static String getAppVersion(){
+		String version=(String)GlbHelper.get("appVersion");
+		if (LightStr.isEmpty(version)) version=LightUtil.bootupTime+"";
+		return version;
 	}
 }
