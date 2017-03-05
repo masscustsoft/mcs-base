@@ -1275,4 +1275,18 @@ public class LightUtil {
 		}
 		map.clear();
 	}
+	
+	public static int isSupportedModule(List<String> sup, String url){
+		if (sup==null||sup.size()==0) return 0;
+		url=url.toLowerCase().replace('\\','/');
+		int idx=0;
+		for (String s:sup){
+			idx++;
+			if (url.contains("wab.direct")) return idx;
+			if (url.contains("/"+s.toLowerCase())) return idx;
+		}
+		return 0;
+	}
+	
+	
 }

@@ -31,6 +31,7 @@ public abstract class AbstractConfig {
 
 	ClusterService clusterService;
 	
+	JobService jobService;
 	
 	public void initThread(){
 		
@@ -127,6 +128,14 @@ public abstract class AbstractConfig {
 
 	public void setClusterService(ClusterService clusterService) {
 		this.clusterService = clusterService;
+	}
+
+	public JobService getJobService() {
+		return jobService;
+	}
+
+	public void setJobService(JobService jobService) {
+		this.jobService = jobService;
 	}
 
 }

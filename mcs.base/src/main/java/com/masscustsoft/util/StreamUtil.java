@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -31,6 +32,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.masscustsoft.api.IUser;
 import com.masscustsoft.helper.Upload;
 import com.masscustsoft.util.inner.StreamCrc;
 
@@ -356,6 +358,16 @@ public class StreamUtil {
 		}
 		f.delete();
 	}
+    
+    public static String getTempFileName(){
+		Random r=new Random(1000);
+		String prefix="tmp-"+LightUtil.getUserId();
+		return prefix+"_" + LightUtil.getCalendar().getTime().getTime() + r.nextLong()+".tmp";
+	}
+	
+    
+    
+    
     
 	public static void streamOut(Upload up,InputStream is, Long size) throws Exception{
 		streamOut(up, is, null, size, null);
