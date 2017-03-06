@@ -68,7 +68,7 @@ public class Repository implements IRepository{
 	}
 
 	@Override
-	public final String getXml(String name) throws Exception{
+	public String getXml(String name) throws Exception{
 		InputStream res=getResource(name+".xml");
 		StringBuffer sb=new StringBuffer();
 		try {
