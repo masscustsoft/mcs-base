@@ -26,11 +26,11 @@ import com.masscustsoft.service.UriContext;
 import com.masscustsoft.service.inner.DiskTempItem;
 import com.masscustsoft.service.inner.DiskTempItemFactory;
 import com.masscustsoft.util.GlbHelper;
-import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.LightStr;
 import com.masscustsoft.util.LightUtil;
 import com.masscustsoft.util.LogUtil;
 import com.masscustsoft.util.ReflectUtil;
+import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.ThreadHelper;
 import com.masscustsoft.xml.XmlNode;
 import com.masscustsoft.xml.XmlParser;
@@ -743,5 +743,14 @@ public class Upload {
 		}
 		System.out.println("cls="+cls+", atts="+nn);
 		return nn;
+	}
+	
+	public static String getWebRoot(){
+		Upload up=Upload.getUpload();
+		HttpServletRequest req = up.getRequest();
+		String url=req.getScheme()+"://"+req.getServerName();
+		if (req.getServerPort()!=80) url+=":"+req.getServerPort();
+		url+=LightUtil.getContextPath();
+		return  url;
 	}
 }

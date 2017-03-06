@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import com.masscustsoft.util.StreamUtil;
+import com.masscustsoft.util.TempUtil;
 
 
 public class FileTempService extends TempService {
@@ -18,7 +19,7 @@ public class FileTempService extends TempService {
 	
 	@Override
 	public FileTempItem newTempItem(String name){
-		if (name==null) name=StreamUtil.getTempFileName();
+		if (name==null) name=TempUtil.getTempFileName();
 		return new FileTempItem(this, name);
 	}
 	

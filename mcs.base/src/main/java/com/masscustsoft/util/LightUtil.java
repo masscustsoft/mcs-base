@@ -17,7 +17,9 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -35,6 +37,7 @@ import com.masscustsoft.api.ICleanup;
 import com.masscustsoft.api.IDataService;
 import com.masscustsoft.api.IRepository;
 import com.masscustsoft.api.JsonField;
+import com.masscustsoft.helper.HttpClient;
 import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.service.TempItem;
 import com.masscustsoft.xml.Parser;
@@ -1288,5 +1291,33 @@ public class LightUtil {
 		return 0;
 	}
 	
+	public static Map loadFromCfgSite(String cfgSiteUrl,String ctxId) throws Exception{
+		List<String> ips = LightUtil.getIpAddresses();
+		if (ips.size()==0) ips.add("nofound");
+		String ip=LightStr.join(ips, ", ");
+		String ctx=LightStr.replace(ctxId, "/", "");
+		if (LightStr.isEmpty(cfgSiteUrl)) return new HashMap();
+		String url = cfgSiteUrl + "/service?$=" + LightStr.encode("{cmd:'GET_CFG',serverIP:'"+ip+"',contextId:'"+ctx+"'}");
+		HttpClient hc = new HttpClient();
+		StringBuffer buf = new StringBuffer();
+		hc.doGet(url, buf);
+		String props=LightStr.decode(buf.toString());
+		Map m=(Map)LightUtil.parseJson(props); m.remove("successful");
+		System.out.println("CfgSiteUrl="+cfgSiteUrl+",IP="+ip+",ctx="+ctx+",BUF=" + m);
+		return m;
+	}
+	
+	public static String getLang(){
+		String lang=(String)ThreadHelper.get("$$lang");
+		if (lang==null) lang="en";
+		return lang;
+	}
+	
+	public static String getToken(String salt) throws Exception{
+		if (salt==null) salt="SuperEasy";
+		String ss="{time:'"+new Date().getTime()+"',uid:'"+LightUtil.getUserId()+"'}";
+		String token=EncryptUtil.encrypt(ss, salt);
+		return token;
+	}
 	
 }

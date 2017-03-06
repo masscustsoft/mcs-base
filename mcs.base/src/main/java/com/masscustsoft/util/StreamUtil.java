@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -32,46 +33,11 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.masscustsoft.api.IUser;
 import com.masscustsoft.helper.Upload;
 import com.masscustsoft.util.inner.StreamCrc;
 
 public class StreamUtil {
 
-	public static Color decodeHtmlColor(String colorString) {
-		Color color;
-
-		if (colorString.startsWith("#")) {
-			colorString = colorString.substring(1);
-		}
-		if (colorString.endsWith(";")) {
-			colorString = colorString.substring(0, colorString.length() - 1);
-		}
-
-		int red, green, blue;
-		switch (colorString.length()) {
-		case 6:
-			red = Integer.parseInt(colorString.substring(0, 2), 16);
-			green = Integer.parseInt(colorString.substring(2, 4), 16);
-			blue = Integer.parseInt(colorString.substring(4, 6), 16);
-			color = new Color(red, green, blue);
-			break;
-		case 3:
-			red = Integer.parseInt(colorString.substring(0, 1), 16);
-			green = Integer.parseInt(colorString.substring(1, 2), 16);
-			blue = Integer.parseInt(colorString.substring(2, 3), 16);
-			color = new Color(red, green, blue);
-			break;
-		case 1:
-			red = green = blue = Integer.parseInt(colorString.substring(0, 1), 16);
-			color = new Color(red, green, blue);
-			break;
-		default:
-			throw new IllegalArgumentException("Invalid color: " + colorString);
-		}
-		return color;
-	}
-	
 	public static long copyStream(InputStream is, OutputStream os, int max) throws IOException {
 		long total=0;
 		byte[] buf = new byte[8192];
@@ -359,13 +325,28 @@ public class StreamUtil {
 		f.delete();
 	}
     
-    public static String getTempFileName(){
-		Random r=new Random(1000);
-		String prefix="tmp-"+LightUtil.getUserId();
-		return prefix+"_" + LightUtil.getCalendar().getTime().getTime() + r.nextLong()+".tmp";
+    public static Properties loadProperties(File f) {
+		Properties p = new Properties();
+		try {
+			InputStream is = new FileInputStream(f);
+			p.load(is);
+			is.close();
+		} catch (Exception e) {
+		}
+		return p;
 	}
+
+	public static void saveProperties(Properties p, File f) {
+		try {
+			OutputStream os = new FileOutputStream(f);
+			p.store(os, "");
+			os.close();
+		} catch (Exception e) {
+			LogUtil.dumpStackTrace(e);
+		}
+	}
+
 	
-    
     
     
     
@@ -586,6 +567,11 @@ public class StreamUtil {
 			if (is!=null) is.close();
 		}
 	}
+
+	public static String fileExt(String fn){
+		return fn.substring(fn.lastIndexOf(".")+1).toLowerCase();
+	}
+
 }
 
 

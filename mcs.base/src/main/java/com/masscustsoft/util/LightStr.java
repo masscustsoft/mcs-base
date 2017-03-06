@@ -1,5 +1,6 @@
 package com.masscustsoft.util;
 
+import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +8,9 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.masscustsoft.api.IBody;
@@ -417,5 +420,136 @@ public class LightStr {
 		}
 	}
 	
+	public static String replace(String text, String searchString,
+			String replacement, int max) {
+		if (isEmpty(text) || isEmpty(searchString) || replacement == null
+				|| max == 0) {
+			return text;
+		}
+		int start = 0;
+		int end = text.indexOf(searchString, start);
+		if (end == -1) {
+			return text;
+		}
+		int replLength = searchString.length();
+		int increase = replacement.length() - replLength;
+		increase = (increase < 0 ? 0 : increase);
+		increase *= (max < 0 ? 16 : (max > 64 ? 64 : max));
+		StringBuffer buf = new StringBuffer(text.length() + increase);
+		while (end != -1) {
+			buf.append(text.substring(start, end)).append(replacement);
+			start = end + replLength;
+			if (--max == 0) {
+				break;
+			}
+			end = text.indexOf(searchString, start);
+		}
+		buf.append(text.substring(start));
+		return buf.toString();
+	}
 	
+	public static String replace(String text, String searchString,
+			String replacement) {
+		return replace(text, searchString, replacement, -1);
+	}
+	
+	public static String join(List<String> list, String joinStr){
+		StringBuffer buf=new StringBuffer();
+		for (String s:list){
+			if (buf.length()>0) buf.append(joinStr);
+			buf.append(s);
+		}
+		return buf.toString();
+	}
+	
+	public static String find(StringBuffer buf, String keyPhase, String endPhase){
+		return find(buf,keyPhase,endPhase,1);
+	}
+	
+	public static String find(StringBuffer buf, String keyPhase, String endPhase, int nd){
+		int from=0,i=0;
+		while(nd>0){
+			nd--;
+			i=buf.indexOf(keyPhase,from);
+			if (i<0) return "";
+			from=i+keyPhase.length();
+		}
+		i+=keyPhase.length();
+		if (!isEmpty(endPhase)){
+			int j=buf.indexOf(endPhase,i);
+			return buf.substring(i,j);
+		}
+		return buf.substring(i);
+	}
+	
+	public static String find(String buf, String keyPhase, String endPhase){
+		return find(buf,keyPhase,endPhase,1);
+	}
+	
+	public static String find(String buf, String keyPhase, String endPhase, int nd){
+		int from=0,i=0;
+		while(nd>0){
+			nd--;
+			i=buf.indexOf(keyPhase,from);
+			if (i<0) return "";
+			from=i+keyPhase.length();
+		}
+		i+=keyPhase.length();
+		if (!isEmpty(endPhase)){
+			int j=buf.indexOf(endPhase,i);
+			return buf.substring(i,j);
+		}
+		return buf.substring(i);
+	}
+	
+	public static Color decodeHtmlColor(String colorString) {
+		Color color;
+
+		if (colorString.startsWith("#")) {
+			colorString = colorString.substring(1);
+		}
+		if (colorString.endsWith(";")) {
+			colorString = colorString.substring(0, colorString.length() - 1);
+		}
+
+		int red, green, blue;
+		switch (colorString.length()) {
+		case 6:
+			red = Integer.parseInt(colorString.substring(0, 2), 16);
+			green = Integer.parseInt(colorString.substring(2, 4), 16);
+			blue = Integer.parseInt(colorString.substring(4, 6), 16);
+			color = new Color(red, green, blue);
+			break;
+		case 3:
+			red = Integer.parseInt(colorString.substring(0, 1), 16);
+			green = Integer.parseInt(colorString.substring(1, 2), 16);
+			blue = Integer.parseInt(colorString.substring(2, 3), 16);
+			color = new Color(red, green, blue);
+			break;
+		case 1:
+			red = green = blue = Integer.parseInt(colorString.substring(0, 1), 16);
+			color = new Color(red, green, blue);
+			break;
+		default:
+			throw new IllegalArgumentException("Invalid color: " + colorString);
+		}
+		return color;
+	}
+	
+	public static String formatNumber(String fmt, double num){
+		DecimalFormat df = new DecimalFormat(fmt);
+		String vv=df.format(num);
+		return vv;
+	}
+	
+	public static boolean isNumber(String str) {
+		if (isEmpty(str)) return false;
+		try{  
+			double d = Double.parseDouble(str); 
+			return true;
+		}  
+		catch(NumberFormatException nfe){  
+		    return false;  
+		}  
+	}	
 }

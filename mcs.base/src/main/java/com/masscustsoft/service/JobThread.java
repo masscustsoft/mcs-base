@@ -34,7 +34,7 @@ public class JobThread implements Runnable{
 	transient List<Job> waitings=new ArrayList<Job>();
 	
 	private void runJob(final Job agent,JobInstance inst) throws Exception{
-		ThreadHelper.set("lang", agent.getLang());
+		ThreadHelper.set("$$lang", agent.getLang());
 		ThreadHelper.set("numfmt", agent.getNumFmt());
 		ThreadHelper.set("longdtfmt", agent.getLongDtFmt());
 		ThreadHelper.set("shortdtfmt", agent.getShortDtFmt());

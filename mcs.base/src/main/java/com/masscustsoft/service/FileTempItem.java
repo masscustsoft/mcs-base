@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import com.masscustsoft.util.StreamUtil;
+import com.masscustsoft.util.TempUtil;
 
 public class FileTempItem extends TempItem {
 	File temp;
@@ -16,7 +16,7 @@ public class FileTempItem extends TempItem {
 	
 	public FileTempItem(String name){
 		this.name=name; 
-		if (this.name==null) name=StreamUtil.getTempFileName();
+		if (this.name==null) name=TempUtil.getTempFileName();
 	}
 	
 	public FileTempItem(FileTempService ts, String name){
