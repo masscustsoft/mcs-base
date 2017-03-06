@@ -1,0 +1,76 @@
+<UIPLUGIN>
+	<hooks>
+		<SaHook name="SaAuthorize" />
+		<I18nHook name="I18nHook"/>
+	</hooks>
+	<actions>
+		<Resource trap="false"/>
+		<Init trap="false" />
+		<Login />
+		<Logout trap="false" />
+		<Captcha trap="false" />
+		<ResetPwd trap="false" />
+		<SendCaptcha trap="false" />
+		<LoadModule trap="false" />
+		<GetI18n trap="false"/>
+		<Attachment trap="false"/>
+		<RunJob />
+		<GetPlugins />
+		<GetDefaults />
+		<SetDefaults />
+		<ChangePwd />
+		<Noop />
+		<RunJob />
+		<SyncNotification />
+		<ToPdf/>
+		<GetLangItems />
+		<GetI18nTranslate />
+		<SaveI18nTranslate />
+		<GetModuleItems />
+		<GetMultiList />
+		
+		<GetRecordList id="getI18nRecordList" model="DirectI18n" featureId="" name="" sort="lang,keyId"/>
+		<InsertRecord id="insertI18nRecord" model="DirectI18n" featureId="" name="" hook="I18nHook"/>
+		<UpdateRecord id="updateI18nRecord" model="DirectI18n" featureId="" name="" hook="I18nHook"/>
+		<DeleteRecord id="deleteI18nRecord" model="DirectI18n" skipPrimaryKey="lang" max="100" featureId="" name="" hook="I18nHook"/>
+		
+		<GetRecordList id="getDateRangeList" model="DateRange" featureId="" name="" sort="sequenceId">
+			<fieldMapping>
+				<ownerId>userId</ownerId>
+			</fieldMapping>
+			<defaultActions>
+				<map action="insertDateRange" name='#[Today]' rangeType='AlignToToday' fromOffset="0" toOffset="1"/> 
+				<map action="insertDateRange" name='#[Yesterday]' rangeType='AlignToToday' fromOffset="-1" toOffset="0"/>
+				<map action="insertDateRange" name='#[ThisWeek]' rangeType='AlignToWeekDay' fromWeekDay="Mon" fromOffset="0" toOffset="1"/>
+				<map action="insertDateRange" name='#[LastWeek]' rangeType='AlignToWeekDay' fromWeekDay="Mon" fromOffset="-1" toOffset="0"/>
+				<map action="insertDateRange" name='#[ThisMonth]' rangeType='AlignToMonthDay' fromMonthDay="01" fromOffset="0" toOffset="1"/>
+				<map action="insertDateRange" name='#[LastMonth]' rangeType='AlignToMonthDay' fromMonthDay="01" fromOffset="-1" toOffset="0"/>
+				<map action="insertDateRange" name='#[ThisYear]' rangeType='AlignToYearDay' fromMonthDay="01" fromMonth="Jan" fromOffset="0" toOffset="1"/>
+				<map action="insertDateRange" name='#[LastYear]' rangeType='AlignToYearDay' fromMonthDay="01" fromMonth="Jan" fromOffset="-1" toOffset="0"/>
+			</defaultActions>
+		</GetRecordList>
+		<InsertRecord id="insertDateRange" model="DateRange" featureId="" name="">
+			<fieldMapping>
+				<ownerId>userId</ownerId>
+			</fieldMapping>
+		</InsertRecord>
+		<UpdateRecord id="updateDateRange" model="DateRange" featureId="" name="">
+			<fieldMapping>
+				<ownerId>userId</ownerId>
+			</fieldMapping>
+		</UpdateRecord>
+		<DeleteRecord id="deleteDateRange" model="DateRange" featureId="" name="">
+			<fieldMapping>
+				<ownerId>userId</ownerId>
+			</fieldMapping>
+		</DeleteRecord>
+		<GetItems id="getDateRangeItems" model="DateRange" idField="sequenceId" idPrefix="dateRange-" sort="sequenceId"/>
+		
+		<GetRecordList id="getReportFileList" model="ReportFile" featureId="" name="" sort="createTime desc">
+			<fieldMapping>
+				<ownerId>userId</ownerId>
+			</fieldMapping>
+		</GetRecordList>
+		<DeleteRecord id="deleteReportFile" model="ReportFile" featureId="" name="" />
+	</actions>
+</UIPLUGIN>

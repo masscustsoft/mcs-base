@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="440" height="440" viewBox="0 0 440 440">
+<circle cx="220"
+        cy="220"
+        r="200"
+        stroke="${circle||'darkgray'}"
+        stroke-width="1"
+        fill="${bg||'transparent'}" display="${circle?'block':'none'}"/>
+
+<text fill="${bg||'transparent'}" font-size="${size||200}"
+      alignment-baseline="middle" text-anchor="middle" lengthAdjust="spacing"
+      font-weight="bold" stroke="${color||'darkgray'}" stroke-width="${thick||2}" font-style="italic"
+      y="50%" x="50%">${text||''}</text>
+
+</svg>

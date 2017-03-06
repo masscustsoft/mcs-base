@@ -1,0 +1,11 @@
+<LIST title="#[RecentReports]" actionObject="ReportFile" addable="false" editable="false" deletable="true">
+	<itemContainer>
+		<items>
+			<TEXTFIELD name="name" />
+			<DATETIMEFIELD name="createTime"/>
+		</items>
+	</itemContainer>
+	<itemButtons>
+		<BUTTON icon="images/pdf.svg" module="RecentRptView"/>
+	</itemButtons>
+</LIST>

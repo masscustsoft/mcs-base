@@ -1,0 +1,35 @@
+<WIZARD transMode="true" title="#[I18nTranslate]" insert="true">
+	<saveCfg action="saveI18nTranslate"/>
+	<steps>
+		<FORM title="#[TranslateFrom]">
+			<items>
+				<LOOKUPFIELD name="sourceLang" cache="true" required="true">
+					<loadCfg action="getLangItems"/>
+				</LOOKUPFIELD>
+				<LOOKUPFIELD name="targetLang" cache="true" required="true">
+					<loadCfg action="getLangItems"/>
+				</LOOKUPFIELD>
+				<COMBOFIELD name="targetStatus" required="true" cache="true">
+					<items>
+						<item>auto</item><item>translated</item><item>audited</item>
+					</items>
+				</COMBOFIELD>
+			</items>
+		</FORM>
+		<FORM title="#[TranslateTo]">
+			<loadCfg action="getI18nTranslate" keyFields="sourceLang, targetLang, targetStatus"/>
+			<items>
+				<TEXTAREAFIELD name="translateBody" rows="20" wrap="off"/>
+				<COMBOFIELD name="resetStatus" required="true" cache="true">
+					<items>
+						<item>auto</item><item>translated</item><item>audited</item>
+					</items>
+				</COMBOFIELD>
+				<CHECKBOXFIELD name="setModuleId" valueType="yesno" cache="true" />
+				<LOOKUPFIELD name="moduleId" required="true" cache="true" visible="d.setModuleId=='yes'">
+					<loadCfg action="getModuleItems"/>
+				</LOOKUPFIELD>
+			</items>
+		</FORM>
+	</steps>
+</WIZARD>

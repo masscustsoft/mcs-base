@@ -1,0 +1,35 @@
+<LIST title="#[I18nSetting]" actionObject="I18nRecord" editable="true" deletable="true" itemWidth="400px">
+	<rightButtons>
+		<BUTTON icon="images/translate.svg?color=white" module="I18nTranslate" params="{insert:true}"/>
+	</rightButtons>
+	<itemContainer layout="vbox">
+		<items>
+			<TEXTFIELD name="lang" required="true" enable="false"/>
+			<TEXTFIELD name="keyId" required="true" enable="false"/>
+			<TEXTFIELD name="value" required="true"/>
+			<COMBOFIELD name="status" required="true">
+				<items>
+					<item>auto</item><item>translated</item><item>audited</item>
+				</items>
+			</COMBOFIELD>
+			<LOOKUPFIELD name="moduleId" required="true">
+				<loadCfg action="getModuleItems"/>
+			</LOOKUPFIELD>
+		</items>
+	</itemContainer>
+	<filter textSearch="true">
+		<items>
+			<LOOKUPFIELD name="lang">
+				<loadCfg action="getLangItems"/>
+			</LOOKUPFIELD>
+			<COMBOFIELD name="status">
+				<items>
+					<item>auto</item><item>translated</item><item>audited</item>
+				</items>
+			</COMBOFIELD>
+			<LOOKUPFIELD name="moduleId">
+				<loadCfg action="getModuleItems"/>
+			</LOOKUPFIELD>
+		</items>
+	</filter>
+</LIST>
