@@ -86,7 +86,7 @@ public abstract class AbstractConfig {
 		this.notifyService = notifyService;
 	}
 
-	public void processSQLException(Throwable e, AbstractResult ret) {
+	public void processSQLException(Throwable e, AbstractResult ret) throws Exception {
 		e.printStackTrace();
 	}
 

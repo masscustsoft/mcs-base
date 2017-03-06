@@ -51,7 +51,10 @@ public class AbstractResult {
 			msg=ee.getTargetException().getMessage();
 		}
 		this.result = msg;
-		LightUtil.getCfg().processSQLException(e,this);
+		try {
+			LightUtil.getCfg().processSQLException(e,this);
+		} catch (Exception e1) {
+		}
 	}
 
 	public boolean getSuccess() {

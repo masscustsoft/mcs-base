@@ -40,6 +40,7 @@ import com.masscustsoft.api.JsonField;
 import com.masscustsoft.helper.HttpClient;
 import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.service.TempItem;
+import com.masscustsoft.xml.BeanFactory;
 import com.masscustsoft.xml.Parser;
 import com.masscustsoft.xml.XmlNode;
 
@@ -1319,5 +1320,9 @@ public class LightUtil {
 		String token=EncryptUtil.encrypt(ss, salt);
 		return token;
 	}
-	
+
+	public static <T> T clone(T from, String newId) throws Exception{
+		return getBeanFactory().clone(from, newId);
+	}  
+
 }
