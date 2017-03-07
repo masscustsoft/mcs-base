@@ -527,7 +527,7 @@ public class JobService implements ICleanup{
 		if (getCfg()!=null) {
 			getCfg().initThread();
 		}
-		ThreadHelper.set("userId","jobUser");
+		ThreadHelper.set("userId","jobAgent");
 	}
 
 	public AbstractConfig getCfg() {

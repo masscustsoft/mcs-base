@@ -829,6 +829,8 @@ public class Entity implements IEntity{
 		if (dataService.getTraceable()==false) return;
 		if (!(this instanceof ITraceable)) return;
 		String userId=LightUtil.getUserId();
+		if ("sys".equals(userId)) return;
+		if ("jobAgent".equals(userId)) return;
 		if ("guest".equals(userId)) throw new Exception("#[InvalidOperation]: "+this.getClass().getName());
 		if (userId.startsWith("job@")) return;
 		

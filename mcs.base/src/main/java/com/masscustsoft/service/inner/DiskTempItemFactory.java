@@ -61,21 +61,17 @@ public class DiskTempItemFactory implements FileItemFactory {
 
     // ----------------------------------------------------- Manifest constants
 
-
     /**
      * The default threshold above which uploads will be stored on disk.
      */
     public static final int DEFAULT_SIZE_THRESHOLD = 10240;
 
-
     // ----------------------------------------------------- Instance Variables
-
 
     /**
      * The directory in which uploaded files will be stored, if stored on disk.
      */
     private TempService repository=new RamTempService();
-
 
     /**
      * The threshold above which uploads will be stored on disk.
@@ -91,9 +87,8 @@ public class DiskTempItemFactory implements FileItemFactory {
      * may be configured by calling the appropriate setter methods.
      */
     public DiskTempItemFactory() {
-        // Does nothing.
+    	this(DEFAULT_SIZE_THRESHOLD, null);
     }
-
 
     /**
      * Constructs a preconfigured instance of this class.
@@ -127,7 +122,6 @@ public class DiskTempItemFactory implements FileItemFactory {
         return repository;
     }
 
-
     /**
      * Sets the directory used to temporarily store files that are larger
      * than the configured size threshold.
@@ -141,7 +135,6 @@ public class DiskTempItemFactory implements FileItemFactory {
         this.repository = repository;
     }
 
-
     /**
      * Returns the size threshold beyond which files are written directly to
      * disk. The default value is 10240 bytes.
@@ -154,7 +147,6 @@ public class DiskTempItemFactory implements FileItemFactory {
         return sizeThreshold;
     }
 
-
     /**
      * Sets the size threshold beyond which files are written directly to disk.
      *
@@ -166,7 +158,6 @@ public class DiskTempItemFactory implements FileItemFactory {
     public void setSizeThreshold(int sizeThreshold) {
         this.sizeThreshold = sizeThreshold;
     }
-
 
     // --------------------------------------------------------- Public Methods
 
@@ -184,23 +175,10 @@ public class DiskTempItemFactory implements FileItemFactory {
      *
      * @return The newly created file item.
      */
-    public FileItem createItem(
-    		RequestContext rc,
-            String fieldName,
-            String contentType,
-            boolean isFormField,
-            String fileName
-            ) {
-        return new DiskTempItem(rc, fieldName, contentType,
+    public FileItem createItem(String fieldName, String contentType,
+            boolean isFormField, String fileName) {
+        return new DiskTempItem(fieldName, contentType,
                 isFormField, fileName, sizeThreshold, repository);
     }
-
-    @Override
-	public FileItem createItem( String fieldName,
-            String contentType,
-            boolean isFormField,
-            String fileName) {
-		return null;
-	}
 
 }

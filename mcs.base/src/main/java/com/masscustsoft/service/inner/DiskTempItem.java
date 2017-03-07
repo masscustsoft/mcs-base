@@ -28,12 +28,15 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemHeaders;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.ParameterParser;
 import org.apache.commons.fileupload.RequestContext;
+import org.apache.commons.fileupload.util.Streams;
 import org.apache.commons.io.FileCleaner;
 import org.apache.commons.io.IOUtils;
 
@@ -80,6 +83,10 @@ public class DiskTempItem
 
     // ----------------------------------------------------- Manifest constants
 
+    /**
+     * The UID to use when serializing this instance.
+     */
+    private static final long serialVersionUID = 2237570099615271025L;
 
     /**
      * Default content charset to be used when no explicit charset
@@ -89,15 +96,23 @@ public class DiskTempItem
      */
     public static final String DEFAULT_CHARSET = "ISO-8859-1";
 
-
     // ----------------------------------------------------------- Data members
 
+    /**
+     * UID used in unique file name generation.
+     */
+    private static final String UID =
+            UUID.randomUUID().toString().replace('-', '_');
+
+    /**
+     * Counter used in unique identifier generation.
+     */
+    private static final AtomicInteger COUNTER = new AtomicInteger(0);
 
     /**
      * The name of the form field as provided by the browser.
      */
     private String fieldName;
-
 
     /**
      * The content type passed by the browser, or <code>null</code> if
@@ -105,18 +120,15 @@ public class DiskTempItem
      */
     private String contentType;
 
-
     /**
      * Whether or not this item is a simple form field.
      */
     private boolean isFormField;
 
-
     /**
      * The original filename in the user's filesystem.
      */
     private String fileName;
-
 
     /**
      * The size of the item, in bytes. This is used to cache the size when a
@@ -128,20 +140,17 @@ public class DiskTempItem
     /**
      * The threshold above which uploads will be stored on disk.
      */
-    private int sizeThreshold;
-
+    private int sizeThreshold=0;
 
     /**
      * The directory in which uploaded files will be stored, if stored on disk.
      */
     private TempService repository;
 
-
     /**
      * Cached contents of the file.
      */
     private byte[] cachedContent;
-
 
     /**
      * Output stream for this item.
@@ -153,10 +162,9 @@ public class DiskTempItem
      */
     private TempItem dfosFile;
 
-    private RequestContext rc;
+    private FileItemHeaders headers;
 
     // ----------------------------------------------------------- Constructors
-
 
     /**
      * Constructs a new <code>DiskFileItem</code> instance.
@@ -175,11 +183,10 @@ public class DiskTempItem
      *                      which files will be created, should the item size
      *                      exceed the threshold.
      */
-    public DiskTempItem(RequestContext rc,String fieldName, String contentType,
+    public DiskTempItem(String fieldName, String contentType,
             boolean isFormField, String fileName, int sizeThreshold,
             TempService repository) {
-    	this.rc=rc;
-        this.fieldName = fieldName;
+    	this.fieldName = fieldName;
         this.contentType = contentType;
         this.isFormField = isFormField;
         this.fileName = fileName;
@@ -192,8 +199,7 @@ public class DiskTempItem
 
 
     public DiskTempItem() {
-		// TODO Auto-generated constructor stub
-	}
+   	}
 
 
 	/**
@@ -217,7 +223,6 @@ public class DiskTempItem
         return new ByteArrayInputStream(cachedContent);
     }
 
-
     /**
      * Returns the content type passed by the agent or <code>null</code> if
      * not defined.
@@ -228,7 +233,6 @@ public class DiskTempItem
     public String getContentType() {
         return contentType;
     }
-
 
     /**
      * Returns the content charset passed by the agent or <code>null</code> if
@@ -241,27 +245,24 @@ public class DiskTempItem
         ParameterParser parser = new ParameterParser();
         parser.setLowerCaseNames(true);
         // Parameter parser can handle null input
-        Map params = parser.parse(getContentType(), ';');
-        String cs=(String) params.get("charset");
-        if (cs==null){
-        	cs=this.rc.getCharacterEncoding();
-        }
-        return cs;
+        Map<String, String> params = parser.parse(getContentType(), ';');
+        return params.get("charset");
     }
-
 
     /**
      * Returns the original filename in the client's filesystem.
      *
      * @return The original filename in the client's filesystem.
+     * @throws org.apache.commons.fileupload.InvalidFileNameException The file name contains a NUL character,
+     *   which might be an indicator of a security attack. If you intend to
+     *   use the file name anyways, catch the exception and use
+     *   {@link org.apache.commons.fileupload.InvalidFileNameException#getName()}.
      */
     public String getName() {
-        return fileName;
+        return Streams.checkFileName(fileName);
     }
 
-
     // ------------------------------------------------------- FileItem methods
-
 
     /**
      * Provides a hint as to whether or not the file contents will be read
@@ -276,7 +277,6 @@ public class DiskTempItem
         }
         return dfos.isInMemory();
     }
-
 
     /**
      * Returns the size of the file.
@@ -294,7 +294,6 @@ public class DiskTempItem
             return dfos.getFile().length();
         }
     }
-
 
     /**
      * Returns the contents of the file as an array of bytes.  If the
@@ -315,7 +314,7 @@ public class DiskTempItem
         InputStream fis = null;
 
         try {
-            fis = dfos.getFile().getInputStream();
+            fis = new BufferedInputStream(dfos.getFile().getInputStream());
             fis.read(fileData);
         } catch (IOException e) {
             fileData = null;
@@ -331,7 +330,6 @@ public class DiskTempItem
 
         return fileData;
     }
-
 
     /**
      * Returns the contents of the file as a String, using the specified
@@ -350,15 +348,14 @@ public class DiskTempItem
         return new String(get(), charset);
     }
 
-
     /**
      * Returns the contents of the file as a String, using the default
      * character encoding.  This method uses {@link #get()} to retrieve the
      * contents of the file.
      *
-     * @return The contents of the file, as a string.
+     * <b>TODO</b> Consider making this method throw UnsupportedEncodingException.
      *
-     * @todo Consider making this method throw UnsupportedEncodingException.
+     * @return The contents of the file, as a string.
      */
     public String getString() {
         byte[] rawdata = get();
@@ -372,7 +369,6 @@ public class DiskTempItem
             return new String(rawdata);
         }
     }
-
 
     /**
      * A convenience method to write an uploaded item to disk. The client code
@@ -452,7 +448,6 @@ public class DiskTempItem
         }
     }
 
-
     /**
      * Deletes the underlying storage for a file item, including deleting any
      * associated temporary disk file. Although this storage will be deleted
@@ -468,7 +463,6 @@ public class DiskTempItem
         }
     }
 
-
     /**
      * Returns the name of the field in the multipart form corresponding to
      * this file item.
@@ -482,7 +476,6 @@ public class DiskTempItem
         return fieldName;
     }
 
-
     /**
      * Sets the field name used to reference this file item.
      *
@@ -494,7 +487,6 @@ public class DiskTempItem
     public void setFieldName(String fieldName) {
         this.fieldName = fieldName;
     }
-
 
     /**
      * Determines whether or not a <code>FileItem</code> instance represents
@@ -510,7 +502,6 @@ public class DiskTempItem
         return isFormField;
     }
 
-
     /**
      * Specifies whether or not a <code>FileItem</code> instance represents
      * a simple form field.
@@ -524,7 +515,6 @@ public class DiskTempItem
     public void setFormField(boolean state) {
         isFormField = state;
     }
-
 
     /**
      * Returns an {@link java.io.OutputStream OutputStream} that can
@@ -543,9 +533,7 @@ public class DiskTempItem
         return dfos;
     }
 
-
     // --------------------------------------------------------- Public methods
-
 
     /**
      * Returns the {@link java.io.File} object for the <code>FileItem</code>'s
@@ -565,9 +553,7 @@ public class DiskTempItem
         return dfos.getFile();
     }
 
-
     // ------------------------------------------------------ Protected methods
-
 
     /**
      * Removes the file contents from the temporary storage.
@@ -665,15 +651,22 @@ public class DiskTempItem
 	public void setFileName(String fn){
 		this.fileName=fn;
 	}
+    
+    
+    /**
+     * Returns the file item headers.
+     * @return The file items headers.
+     */
+    public FileItemHeaders getHeaders() {
+        return headers;
+    }
 
-	@Override
-	public FileItemHeaders getHeaders() {
-		return null;
-	}
-
-	@Override
-	public void setHeaders(FileItemHeaders arg0) {
-		
-	}
+    /**
+     * Sets the file item headers.
+     * @param pHeaders The file items headers.
+     */
+    public void setHeaders(FileItemHeaders pHeaders) {
+        headers = pHeaders;
+    }
 
 }
