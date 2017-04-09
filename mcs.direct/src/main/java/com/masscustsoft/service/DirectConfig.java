@@ -33,8 +33,6 @@ import com.masscustsoft.xml.BeanFactory;
 public class DirectConfig extends AbstractConfig {
 	String defaultFsId, defaultDsId, defaultSysId, initId, resourceId;
 
-	String guestEntry,mainEntry;
-
 	Integer heartBeat;
 
 	String pingable, secureSessionId;
@@ -70,6 +68,9 @@ public class DirectConfig extends AbstractConfig {
 	public void init() throws Exception {
 		String modules=supportedModules;
 		
+		//step 1 plugin to get all classpath set
+		loadPlugins(modules);
+		
 		loadUiPlugins(modules);
 		
 		Long def=LightUtil.bootupTime%1000;
@@ -80,6 +81,33 @@ public class DirectConfig extends AbstractConfig {
 		}
 	}
 
+	public static void loadPlugins(String supported) throws Exception{
+		ClassLoader cl = CLASS.getLoader();
+		BeanFactory bf=BeanFactory.getBeanFactory();
+		
+		List<String> sup=MapUtil.getSelectList(supported);
+		
+		LogUtil.info("LOAD PLUGIN");
+		Enumeration<URL> all = cl.getResources("META-INF/PLUGIN.xml");
+		for (;all.hasMoreElements();){
+			URL u=all.nextElement();
+			int idx=LightUtil.isSupportedModule(sup,u.getPath());
+			if (supported!=null && idx==0) continue;
+			InputStream is = u.openStream();
+			StringBuffer buf=new StringBuffer();
+			StreamUtil.loadStream(is, buf, LightUtil.UTF8);
+			PLUGIN plug=(PLUGIN)bf.loadBean(buf.toString());
+			for (IDataService d:plug.getDataServices()){
+				bf.addDataService(d.getDsId(), d);
+			}
+			for (IRepository r:plug.getRepositories()){
+				bf.addRepository(r.getFsId(), r);
+			}
+			for (String pkg:plug.getPackages()){
+				bf.addPackage(pkg);
+			}
+		}
+	}
 	public void loadUiPlugins(String supported) throws Exception {
 		ClassLoader cl = CLASS.getLoader();
 		BeanFactory bf = BeanFactory.getBeanFactory();
@@ -100,15 +128,6 @@ public class DirectConfig extends AbstractConfig {
 			StringBuffer buf = new StringBuffer();
 			StreamUtil.loadStream(is, buf, LightUtil.UTF8);
 			UIPLUGIN plug = (UIPLUGIN) bf.loadBean(buf.toString());
-			for (IDataService d : plug.getDataServices()) {
-				bf.addDataService(d.getDsId(), d);
-			}
-			for (IRepository r : plug.getRepositories()) {
-				bf.addRepository(r.getFsId(), r);
-			}
-			for (String pkg : plug.getPackages()) {
-				bf.addPackage(pkg);
-			}
 			for (DirectAction a : plug.getActions()) {
 				a.init(this);
 			}
@@ -320,22 +339,6 @@ public class DirectConfig extends AbstractConfig {
 
 	public void setDefaultSysId(String defaultSysId) {
 		this.defaultSysId = defaultSysId;
-	}
-
-	public String getGuestEntry() {
-		return guestEntry;
-	}
-
-	public void setGuestEntry(String guestEntry) {
-		this.guestEntry = guestEntry;
-	}
-
-	public String getMainEntry() {
-		return mainEntry;
-	}
-
-	public void setMainEntry(String mainEntry) {
-		this.mainEntry = mainEntry;
 	}
 
 	public String getResourceId() {

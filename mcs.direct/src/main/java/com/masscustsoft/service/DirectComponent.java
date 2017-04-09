@@ -19,12 +19,11 @@ import com.masscustsoft.model.DirectUser;
 import com.masscustsoft.model.DirectUserRole;
 import com.masscustsoft.model.Entity;
 import com.masscustsoft.model.ExternalFile;
-import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.LightStr;
+import com.masscustsoft.util.LightUtil;
 import com.masscustsoft.util.MapUtil;
 import com.masscustsoft.util.ReflectUtil;
-import com.masscustsoft.util.LightUtil;
-import com.masscustsoft.util.LightStr;
+import com.masscustsoft.util.StreamUtil;
 import com.masscustsoft.util.ThreadHelper;
 
 public class DirectComponent {
@@ -216,8 +215,8 @@ public class DirectComponent {
 			 if (trap) throw new Exception("#[SessionExpired]");
 			 return;
 		}
-		Upload.getUpload().getFieldMap().putAll(ses.getVars());
 		if (trap){
+			Upload.getUpload().getFieldMap().putAll(ses.getVars());
 			Upload.getUpload().getFieldMap().put("userId",ses.getUserId());
 		}
 		

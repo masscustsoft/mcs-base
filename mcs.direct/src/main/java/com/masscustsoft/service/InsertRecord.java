@@ -63,7 +63,7 @@ public class InsertRecord extends RecordAction {
 		// allow chain actions
 
 		List<String> keys = MapUtil.getSelectList(returns);
-		keys.addAll(getPrimaryKeys(cls));
+		keys.addAll(getPrimaryKeys(cls,false));
 
 		for (String s : keys) {
 			String v=m.get(s)+"";

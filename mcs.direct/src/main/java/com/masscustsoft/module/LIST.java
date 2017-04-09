@@ -26,6 +26,9 @@ public class LIST extends PANEL {
 	
 	JOINLIST detail;
 	
+	String viewType; //accordion, tree, default
+	
+	
 	public LoadCfg getLoadCfg() {
 		return loadCfg;
 	}
@@ -136,6 +139,14 @@ public class LIST extends PANEL {
 
 	public void setDetail(JOINLIST detail) {
 		this.detail = detail;
+	}
+
+	public String getViewType() {
+		return viewType;
+	}
+
+	public void setViewType(String viewType) {
+		this.viewType = viewType;
 	}
 
 	

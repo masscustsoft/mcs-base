@@ -200,6 +200,7 @@ public class MapUtil {
 	
 	public static void extractTerms(Map<String,Object> terms){
 		List<String> removes=new ArrayList<String>();
+		String uuid=null;
 		for (String key:terms.keySet()){
 			Object val=terms.get(key);
 			if (val instanceof String){
@@ -208,6 +209,11 @@ public class MapUtil {
 					Object vv=ScriptUtil.runJs(v.substring(3));
 					if (vv!=null) terms.put(key, vv+"");
 					else removes.add(key);
+					v=vv+"";
+				}
+				if (key.equals("uuid") && !LightStr.isEmpty(v)){
+					uuid=v;
+					break;
 				}
 			}
 			else
@@ -216,6 +222,10 @@ public class MapUtil {
 			}
 		}
 		for (String key:removes)terms.remove(key);
+		if (uuid!=null){
+			terms.clear();
+			terms.put("uuid", uuid);
+		}
 	}
 	
 	public static void mergeTerms(Map<String,Object> terms, Map<String,Object>spec, Map<String,Object>values){

@@ -2,6 +2,7 @@ package com.masscustsoft.service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ import com.masscustsoft.util.LogUtil;
 import com.masscustsoft.util.ThreadHelper;
 
 public class JobThread implements Runnable{
-	List<Job> list=new ArrayList<Job>();
+	List<Job> list=Collections.synchronizedList(new ArrayList<Job>());
 	transient IDataService dataService;
 	transient IRepository fileService;
 	

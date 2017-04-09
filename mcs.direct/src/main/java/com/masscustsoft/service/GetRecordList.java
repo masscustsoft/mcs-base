@@ -69,7 +69,7 @@ public class GetRecordList extends GetRecord {
 			}
 			if (model!=null){
 				Class c=this.getModelClass(model);
-				List<String> pkeys = this.getPrimaryKeys(c,keyFields);
+				List<String> pkeys = this.getPrimaryKeys(c,keyFields,false);
 				Map<String,Object> filter=new HashMap<String,Object>();
 				boolean empty=false;
 				for (String k:pkeys){

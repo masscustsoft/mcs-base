@@ -14,6 +14,7 @@ import com.masscustsoft.util.LightUtil;
 import com.masscustsoft.util.LogUtil;
 
 public abstract class AbstractConfig {
+	String appTitle;
 	
 	protected String supportedModules;
 	
@@ -136,6 +137,14 @@ public abstract class AbstractConfig {
 
 	public void setJobService(JobService jobService) {
 		this.jobService = jobService;
+	}
+
+	public String getAppTitle() {
+		return appTitle;
+	}
+
+	public void setAppTitle(String appTitle) {
+		this.appTitle = appTitle;
 	}
 
 }

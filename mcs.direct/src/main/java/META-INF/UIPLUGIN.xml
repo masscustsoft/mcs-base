@@ -15,7 +15,6 @@
 		<GetI18n trap="false"/>
 		<Attachment trap="false"/>
 		<RunJob />
-		<GetPlugins />
 		<GetDefaults />
 		<SetDefaults />
 		<ChangePwd />

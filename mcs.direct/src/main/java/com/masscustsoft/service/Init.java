@@ -55,8 +55,6 @@ public class Init extends DirectAction {
 
 		}
 		
-		m.put("mainEntry", cfg.getMainEntry());
-		m.put("guestEntry", cfg.getGuestEntry());
 		m.put("secureSessionId", cfg.getSecureSessionId());
 		m.put("heartBeat", cfg.getHeartBeat());
 		m.put("allowRegister", allowRegister);

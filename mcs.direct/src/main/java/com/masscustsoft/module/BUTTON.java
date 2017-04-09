@@ -24,6 +24,10 @@ public class BUTTON extends ACTION {
 	
 	String side;
 	
+	String badgeText;
+	
+	String badgeType;  //info, alert
+	
 	List<BUTTON> menus=new ArrayList<BUTTON>();
 	
 	@Override
@@ -43,6 +47,10 @@ public class BUTTON extends ACTION {
 			ret.put("icon",bp.getFsId()+":"+icon);
 		}
 		
+		if (menus.size()==0){
+			ret.remove("menus");
+			ret.put("leaf",true);
+		}
 		return ret;
 	}
 	
@@ -116,6 +124,22 @@ public class BUTTON extends ACTION {
 
 	public void setSide(String side) {
 		this.side = side;
+	}
+
+	public String getBadgeText() {
+		return badgeText;
+	}
+
+	public void setBadgeText(String badgeText) {
+		this.badgeText = badgeText;
+	}
+
+	public String getBadgeType() {
+		return badgeType;
+	}
+
+	public void setBadgeType(String badgeType) {
+		this.badgeType = badgeType;
 	}
 	
 }

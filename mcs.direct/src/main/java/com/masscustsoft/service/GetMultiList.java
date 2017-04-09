@@ -39,13 +39,13 @@ public class GetMultiList extends DirectAction {
 				m.put("uuid","_sect-"+index);
 				m.put("title", tit);
 				m.put("_sectid_", index);
-				m.put("index", 0);
+				m.put("_idx_", 0);
 				result.add(m);
 			}
 			for (Map<String,Object> m:lst){
 				Map x=new HashMap();
 				x.put("_sectid_",index);
-				x.put("index",nn); nn++;
+				x.put("_idx_",nn); nn++;
 				String key;
 				for (String f:m.keySet()){
 					if (f.equals("uuid")) key=f; else key="_"+index+"__"+f;

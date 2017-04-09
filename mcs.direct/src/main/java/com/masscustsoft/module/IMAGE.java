@@ -1,16 +1,5 @@
 package com.masscustsoft.module;
 
-import java.io.InputStream;
-import java.util.Map;
-
-import org.apache.commons.codec.binary.Base64;
-
-import com.masscustsoft.helper.Upload;
-import com.masscustsoft.service.DirectConfig;
-import com.masscustsoft.util.LightUtil;
-import com.masscustsoft.xml.BeanFactory;
-import com.masscustsoft.xml.BeanProxy;
-
 public class IMAGE extends ELEMENT {
 	String src;
 

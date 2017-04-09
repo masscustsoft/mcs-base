@@ -8,9 +8,6 @@ import com.masscustsoft.api.IRepository;
 import com.masscustsoft.service.PLUGIN;
 
 public class UIPLUGIN{
-	List<IDataService> dataServices=new ArrayList<IDataService>();
-	List<IRepository> repositories=new ArrayList<IRepository>();
-	List<String> packages=new ArrayList<String>();
 	List<DirectDispatch> requestDispatches = new ArrayList<DirectDispatch>();
 	List<UIENTRY> uiEntries=new ArrayList<UIENTRY>();
 	List<HOOK> hooks=new ArrayList<HOOK>();
@@ -55,30 +52,6 @@ public class UIPLUGIN{
 
 	public void setFeatures(List<Feature> features) {
 		this.features = features;
-	}
-
-	public List<IDataService> getDataServices() {
-		return dataServices;
-	}
-
-	public void setDataServices(List<IDataService> dataServices) {
-		this.dataServices = dataServices;
-	}
-
-	public List<IRepository> getRepositories() {
-		return repositories;
-	}
-
-	public void setRepositories(List<IRepository> repositories) {
-		this.repositories = repositories;
-	}
-
-	public List<String> getPackages() {
-		return packages;
-	}
-
-	public void setPackages(List<String> packages) {
-		this.packages = packages;
 	}
 
 }

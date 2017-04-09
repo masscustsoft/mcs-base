@@ -448,7 +448,7 @@ public class LightUtil {
 
 	public static String jsDateFormat(String fmt) {
 		String fmt2 = fmt.replace("Y", "yyyy").replace("M", "MMM").replace("m", "MM").replace("d", "dd")
-				.replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("+", " ");
+				.replace("H", "HH").replace("i", "mm").replace("s", "ss").replace("+", " ").replace("g", "h").replace("A", "a");
 		// System.out.println("fmt="+fmt+",fmt2="+fmt2);
 		return fmt2;
 	}

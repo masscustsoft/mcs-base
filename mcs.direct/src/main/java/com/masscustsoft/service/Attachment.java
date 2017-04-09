@@ -4,6 +4,7 @@ import java.io.InputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.masscustsoft.api.IRepository;
 import com.masscustsoft.helper.HttpClient;
 import com.masscustsoft.helper.Upload;
 import com.masscustsoft.model.AbstractResult;
@@ -34,14 +35,16 @@ public class Attachment extends DirectAction {
 		Long size=null;
 		Long last=LightUtil.bootupTime;
 		if (!id.equals("url")) {
+			IRepository fs = getFs();
 			ExternalFile ef = getDs().getBean(ExternalFile.class, "uuid", id);
 			if (ef != null) {
-				is = ef.getResource(getFs().getFsId());
+				is = ef.getResource(fs.getFsId());
 				size=ef.getSize();
 			} else {
-				is = getFs().getResource(f);
-				last=getFs().getLastModified(f);
+				is = fs.getResource(f);
+				last=fs.getLastModified(f);
 			}
+			System.out.println("fs="+fs.getFsId());
 		} else {
 			HttpClient hc = new HttpClient();
 			try {

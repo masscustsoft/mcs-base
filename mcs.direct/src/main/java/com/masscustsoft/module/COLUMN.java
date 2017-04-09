@@ -8,6 +8,7 @@ public class COLUMN extends ELEMENT {
 	String name;
 	String label;
 	Double minWidth;
+	Boolean locked;
 	
 	@Override
 	public Map<String,Object> toJson() {
@@ -42,6 +43,14 @@ public class COLUMN extends ELEMENT {
 
 	public void setMinWidth(Double minWidth) {
 		this.minWidth = minWidth;
+	}
+
+	public Boolean getLocked() {
+		return locked;
+	}
+
+	public void setLocked(Boolean locked) {
+		this.locked = locked;
 	}
 	
 }

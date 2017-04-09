@@ -572,8 +572,7 @@ public class Upload {
 			return def;
 		String ret=LightUtil.getCookie(up.getRequest(), key, null);
 		if (ret==null){
-			ret=up.getStr(key, def);
-			if (ret!=null) setCookie(key, ret);
+			ret=def;
 		}
 		return ret;
 	}

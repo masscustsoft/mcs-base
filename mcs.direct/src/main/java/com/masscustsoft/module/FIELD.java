@@ -27,7 +27,6 @@ public class FIELD extends ELEMENT {
 	Boolean cache;
 	String tag;
 	String onChange;
-	Boolean clearIcon;
 	
 	protected String getDefaultLabel(String lbl){
 		return lbl+"Lbl";
@@ -43,6 +42,7 @@ public class FIELD extends ELEMENT {
 			ret.put("label", "#["+LightStr.capitalize(getDefaultLabel(lbl))+"]");
 		}
 		String lbl=(String)ret.get("label");
+		System.out.println("FIELD lbl="+lbl+",ret="+ret);
 		if (lbl.startsWith("@")){
 			DirectConfig cfg = (DirectConfig)LightUtil.getCfg();
 			BeanFactory bf = cfg.getBeanFactory();
@@ -189,14 +189,6 @@ public class FIELD extends ELEMENT {
 
 	public void setOnChange(String onChange) {
 		this.onChange = onChange;
-	}
-
-	public Boolean getClearIcon() {
-		return clearIcon;
-	}
-
-	public void setClearIcon(Boolean clearIcon) {
-		this.clearIcon = clearIcon;
 	}
 	
 }

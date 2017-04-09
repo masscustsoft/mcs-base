@@ -7,6 +7,8 @@ public class TABPANEL extends PANEL {
 	LoadCfg loadCfg;
 	List<BUTTON> sysMenus=new ArrayList();
 	
+	String tabPosition="bottom";
+	
 	public LoadCfg getLoadCfg() {
 		return loadCfg;
 	}
@@ -21,6 +23,14 @@ public class TABPANEL extends PANEL {
 
 	public void setSysMenus(List<BUTTON> sysMenus) {
 		this.sysMenus = sysMenus;
+	}
+
+	public String getTabPosition() {
+		return tabPosition;
+	}
+
+	public void setTabPosition(String tabPosition) {
+		this.tabPosition = tabPosition;
 	}
 	
 }

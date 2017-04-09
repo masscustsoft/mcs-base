@@ -22,7 +22,7 @@ public class CacheService {
 	private transient Map<String, Object> _map=null;
 	private Pattern cachePattern=null, noCachePattern=null;
 	
-	private Map<String,Object> getMap(){
+	public Map<String,Object> getMap(){
 		if (_map==null){
 			_map=new LinkedHashMap<String,Object>(max+1,0.75F,true){
 
@@ -48,13 +48,12 @@ public class CacheService {
 	public Object getCache(String id){
 		getMap();
 		synchronized(_map){
-			if (id==null) return new HashMap(_map);
-			if (!isCachable(id)) return null;
 			return _map.get(id);
 		}
 	}
 	
-	private boolean isCachable(String id){
+	public boolean isCachable(String id){
+		if (cachePattern==null && noCachePattern==null) return false;
 		getMap();
 		boolean ret=true;
 		synchronized(_map){
@@ -67,15 +66,12 @@ public class CacheService {
 			    if (m.find()) ret=false;
 			}
 		}
-		//System.out.println("Cacheable id="+id+", "+ret);
 		return ret;
 	}
 	
 	public void setCache(String id, Object value, Boolean single){
 		getMap();
 		synchronized(_map){
-			boolean cacheable=isCachable(id);
-			if (!cacheable) return;
 			if (singleOnly){
 				if (single==null || single==false) return;
 			}

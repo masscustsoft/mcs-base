@@ -45,7 +45,7 @@ public class GetItems extends GetRecordList {
 		Class<? extends Entity> cls = getModelClass();
 
 		if (LightStr.isEmpty(idField)) {
-			List<String> keys = this.getPrimaryKeys(null);
+			List<String> keys = this.getPrimaryKeys(null,false);
 			idField = keys.get(keys.size() - 1);
 		}
 		if (LightStr.isEmpty(nameField)) {

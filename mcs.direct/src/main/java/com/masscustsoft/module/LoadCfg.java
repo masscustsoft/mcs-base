@@ -1,16 +1,14 @@
 package com.masscustsoft.module;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class LoadCfg extends ActionCfg {
 	
 	String onSuccess,onFailure;
 	
 	List fields=new ArrayList();
-	List<Map> data=new ArrayList<Map>();
+	List data=new ArrayList();
 	
 	Integer pageSize;
 	
@@ -30,11 +28,11 @@ public class LoadCfg extends ActionCfg {
 		this.onFailure = onFailure;
 	}
 
-	public List<Map> getData() {
+	public List getData() {
 		return data;
 	}
 
-	public void setData(List<Map> data) {
+	public void setData(List data) {
 		this.data = data;
 	}
 

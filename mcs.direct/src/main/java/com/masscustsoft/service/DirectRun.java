@@ -28,7 +28,8 @@ public class DirectRun{
 	Integer mockDays=0;
 	Date mockDate;
 	Boolean active=true;
-			
+	
+	List<String> detects=new ArrayList<String>();
 	List<Entity> inserts=new ArrayList<Entity>();
 	List<String> deletes=new ArrayList<String>();
 	List<Map> actions=new ArrayList<Map>();
@@ -84,6 +85,14 @@ public class DirectRun{
 	public void run(DirectConfig cfg, IDataService ds, IRepository fs) throws Exception {
 		if (!active) return;
 		DirectRun a=this;
+		
+		if (detects.size()>0){
+			for (String st:detects){
+				Class<Entity> cls = CLASS.forName(cfg.getBeanFactory().findRealClass(st));
+				List<Entity> lst = ds.getBeanList(cls, "{}", "");
+				if (lst.size()>0) return;
+			}
+		}
 		int days=a.getMockDays();
 		if (a.mockDate!=null){
 			Calendar c=LightUtil.getShortCalendar();
@@ -150,5 +159,13 @@ public class DirectRun{
 
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+
+	public List<String> getDetects() {
+		return detects;
+	}
+
+	public void setDetects(List<String> detects) {
+		this.detects = detects;
 	}
 }

@@ -142,8 +142,8 @@ public class DirectServlet extends AbstractServlet {
 		if (!verb.equals("") && action.equals("")){
 			up.setStr("action", verb);
 			action=verb;
-			if (action.equals("index.html") || action.equals("index-debug.html")){
-				up.setFilePath("index.html");
+			if (action.equals("index.html") || action.equals("index-debug.html")||action.equals("index.json")||action.equals("index-debug.json")){
+				up.setFilePath(action);
 				action="resource";
 			}
 			else

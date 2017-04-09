@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.masscustsoft.service.AbstractConfig;
 import com.masscustsoft.service.CacheService;
 import com.masscustsoft.service.SysCmdExpireCache;
 
@@ -33,13 +34,17 @@ public class CacheUtil {
 	}
 	
 	private static CacheService getCacheService(){
-		return LightUtil.getCfg().getCacheService();
+		AbstractConfig cfg = LightUtil.getCfg();
+		if (cfg==null) return null;
+		return cfg.getCacheService();
 	}
 	
 	public static Object getCache(String id){
 		CacheService cs=getCacheService();
 		if (cs==null) return null;
 		if (id==null || id.contains("Stub")) return null;
+		if (!cs.isCachable(id)) return null;
+		
 		Object o=cs.getCache(id);
 		if (o==null) return null;
 		System.out.println("Shot "+id);
@@ -59,10 +64,12 @@ public class CacheUtil {
 	
 	public static void setCache(String id, Object value, Boolean single){
 		CacheService cs=getCacheService();
-		if (cs!=null) {
-			Object o=LightUtil.toJsonObject(value, 1);
-			cs.setCache(id, o, single);
-		}
+		if (cs==null) return;
+		if (id==null || id.contains("Stub")) return;
+		if (!cs.isCachable(id)) return;
+		
+		Object o=LightUtil.toJsonObject(value, 1);
+		cs.setCache(id, o, single);
 	}
 	
 	public static void expireCache(String pattern){

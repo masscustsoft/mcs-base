@@ -72,26 +72,38 @@ public class RecordAction extends DirectAction {
 		return CLASS.forName(cfg.getBeanFactory().findRealClass(model));
 	}
 	
-	protected List<String> getPrimaryKeys(Class c) throws Exception{
-		return getPrimaryKeys(c,keyFields);
+	protected List<String> getPrimaryKeys(Class c,boolean insert) throws Exception{
+		return getPrimaryKeys(c,keyFields,insert);
 	}
-	protected List<String> getPrimaryKeys(Class c, String keyFields) throws Exception{
+	protected List<String> getPrimaryKeys(Class c, String keyFields, boolean insert) throws Exception{
 		List<String> keys=new ArrayList<String>();
+		if (c==null) c=getModelClass();
+		List<Field> flds = ReflectUtil.getFieldMap(c);
 		
 		if (LightStr.isEmpty(keyFields)){
-			if (c==null) c=getModelClass();
-			List<Field> flds = ReflectUtil.getFieldMap(c);
 			for (Field f : flds) {
 				PrimaryKey pk = (PrimaryKey) f.getAnnotation(PrimaryKey.class);
 				if (pk!=null){
+					if (insert){
+						if (f.getAnnotation(AutoInc.class)!=null) continue;
+					}
 					keys.add(f.getName());
 				}
 			}
-			return keys;
+			
 		}
 		else{
-			return MapUtil.getSelectList(keyFields);
+			List<String> items=MapUtil.getSelectList(keyFields);
+			for (Field f : flds) {
+				if (!items.contains(f.getName())) continue;
+				if (insert){
+					if (f.getAnnotation(AutoInc.class)!=null) continue;
+				}
+				keys.add(f.getName());
+			}
 		}
+		
+		return keys;
 	}
 	
 	protected void doFilterIn(Map filter) throws Exception {
@@ -115,7 +127,7 @@ public class RecordAction extends DirectAction {
 	}
 
 	protected void addPrimaryKeys(Class c, Map filter) throws Exception{
-		List<String> keys = getPrimaryKeys(c);
+		List<String> keys = getPrimaryKeys(c,false);
 		for (String key:keys){
 			if (filter.containsKey(key)) continue;
 			String id=key,uploadId=key;
