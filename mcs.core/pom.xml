@@ -4,7 +4,7 @@
 
   <groupId>com.masscustsoft</groupId>
   <artifactId>mcs.core</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>jar</packaging>
 
   <name>mcs.core</name>
@@ -31,11 +31,13 @@
 	    <groupId>javax.mail</groupId>
 	    <artifactId>javax.mail-api</artifactId>
 	    <version>1.5.6</version>
-	</dependency>
+	    <scope>runtime</scope>
+  	</dependency>
 	<dependency>
 	    <groupId>commons-lang</groupId>
 	    <artifactId>commons-lang</artifactId>
 	    <version>2.5</version>
+	    <scope>runtime</scope>
 	</dependency>
 		    
   </dependencies>
